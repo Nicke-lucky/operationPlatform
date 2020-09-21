@@ -2,13 +2,11 @@ package db
 
 import (
 	"log"
+	"operationPlatform/types"
 	"testing"
+	"time"
 )
 
-func TestNewTables(t *testing.T) {
-	Newdb()
-	//NewTables()
-}
 func TestQueryTable(t *testing.T) {
 	//数据库生成的表名是结构体名称的复数形式
 	s1 := []string{"b_jsjk_jiesjkptyhb",
@@ -47,20 +45,24 @@ func TestQueryTable(t *testing.T) {
 	}
 }
 
-//插入数据
-func TestInsertTabledata(t *testing.T) {
+func TestGatewayInsert(t *testing.T) {
 	Newdb()
-	InsertTabledata(10000)
+	gwxx := new(types.BDmWanggjcxx)
+	gwxx.FVcWanggbh = "abc1231"
+	gwxx.FDtChuangjsj = time.Now()
+	gwxx.FNbCPUsyl = 10.9
+	ierr := GatewayInsert(gwxx)
+	if ierr != nil {
+		log.Println("error:", ierr)
+	}
 }
 
-//
-func TestQueryTabledata(t *testing.T) {
+func TestQueryGatewaydata(t *testing.T) {
 	Newdb()
-	QueryTabledata(10000)
-}
+	qerr, gwxx := QueryGatewaydata("abc1231")
+	if qerr != nil {
+		log.Println("error:", qerr, gwxx)
+	}
+	log.Println("gwxx:", qerr, gwxx)
 
-func TestUpdateTabledata(t *testing.T) {
-	Newdb()
-	//data := &types.BJsjkJiestj{FNbId: 19, FNbZongts: 9999, FNbZongje: 90000}
-	//UpdateTabledata(data, 10000, 19)
 }

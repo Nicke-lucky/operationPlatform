@@ -11,6 +11,8 @@ import (
 
 var GormClient *GormDB
 
+var HmdGormClient *HmdGormDB
+
 type GormDB struct {
 	dbConfig *DBConfig
 	lock     sync.RWMutex // lock
@@ -83,7 +85,7 @@ func HmdInitGormDB(dbConfig *HmdDBConfig) *HmdGormDB {
 	hmdmyDB.initByDBConfigs()
 	hmdmyDB.autoCreateTable()
 	go hmdmyDB.timer()
-
+	HmdGormClient = hmdmyDB //hmdgormClient
 	return hmdmyDB
 }
 

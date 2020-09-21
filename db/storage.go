@@ -21,7 +21,6 @@ func Newdb() {
 func QueryTable(tablename string) {
 	db := utils.GormClient.Client
 	is := db.HasTable(tablename)
-
 	if is == false {
 		log.Println("不存在", tablename)
 		return
@@ -35,10 +34,9 @@ func InsertTabledata(lx int) error {
 	Jiestj := new(types.BJsJiessj)
 	//赋值
 	Jiestj.FNbJusbj = lx //统计类型 10000 ：省外
-
-	if err := db.Table("b_jsjk_jiestj").Create(&Jiestj).Error; err != nil {
+	if err := db.Table("b_js_jiessj").Create(&Jiestj).Error; err != nil {
 		// 错误处理...
-		log.Println("Insert b_jsjk_jiestj error", err)
+		log.Println("Insert b_js_jiessj error", err)
 		return err
 	}
 	log.Println("省外-结算统计表插入成功！", "开始统计时间:=", Jiestj)
@@ -51,7 +49,7 @@ func QueryTabledata(lx int) (error, *types.BJsJiessj) {
 	//Jiestjs := make([]types.BJsjkJiestj, 0)
 	Jiestjs := new(types.BJsJiessj)
 	//赋值
-	if err := db.Table("b_jsjk_jiestj").Where("F_NB_KAWLH=?", lx).Last(&Jiestjs).Error; err != nil {
+	if err := db.Table("b_js_jiessj").Where("F_NB_KAWLH=?", lx).Last(&Jiestjs).Error; err != nil {
 		log.Println("查询 结算监控统计表最新数据时 QueryTabledata error :", err)
 		return err, nil
 	}
@@ -64,7 +62,7 @@ func UpdateTabledata(data *types.BJsJiessj, lx int, id int) error {
 	db := utils.GormClient.Client
 	Jiestj := new(types.BJsJiessj)
 
-	if err := db.Table("b_jsjk_jiestj").Where("F_NB_ID=?", id).Where("F_NB_KAWLH=?", lx).Updates(&Jiestj).Error; err != nil {
+	if err := db.Table("b_js_jiessj").Where("F_NB_ID=?", id).Where("F_NB_KAWLH=?", lx).Updates(&Jiestj).Error; err != nil {
 		log.Println("更新结算统计表 error", err)
 		return err
 	}
