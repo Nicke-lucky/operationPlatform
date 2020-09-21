@@ -17,7 +17,7 @@ mysql_databasename = payflow
 log_maxAge       = 365 ;//日志最大保存时间（天）
 log_rotationTime = 24  ;//日志切割时间间隔（小时）
 log_Path         = "./log"
-log_FileName     = "settlementMonitoring.log"
+log_FileName     = "operationPlatform.log"
 
 ;[redis生产]
 ;redis_addr         = "172.18.70.252:6379"

@@ -59,7 +59,7 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	// 5、网关设备详情查询
 	route.GET("/gw/gatewaydevicedetails", controller.QueryGatewayDeviceDetails)
 
-	//6、添加设备
+	//6、添加设备[1?]
 	route.POST("/gw/addgatewaydevice", controller.Addgatewaydevice)
 	//7、增加网关软件更新
 	route.POST("/gw/addgatewayupdate", controller.AddNewgatewayVersion)
