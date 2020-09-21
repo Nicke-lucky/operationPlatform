@@ -1,0 +1,47 @@
+
+; [mysql生产]
+;mysql_hostname     =172.18.70.251
+;mysql_port         = 3306
+;mysql_user         = jstxb
+;mysql_pass         = JStxb0408@
+;mysql_databasename = payflow
+; [mysql测试]
+mysql_hostname     =122.51.24.189
+mysql_port         = 3307
+mysql_user         = root
+mysql_pass         = Microvideo_1
+mysql_databasename = payflow
+
+;日志配置
+;[logconf]
+log_maxAge       = 365 ;//日志最大保存时间（天）
+log_rotationTime = 24  ;//日志切割时间间隔（小时）
+log_Path         = "./log"
+log_FileName     = "settlementMonitoring.log"
+
+;[redis生产]
+;redis_addr         = "172.18.70.252:6379"
+;redis_databasename  = 2
+;redis_pass =
+
+;[redis开发]
+redis_addr          = "192.168.200.201:6379"
+redis_databasename  = 2
+
+
+;[ip_address]结算监控6089
+ip_address          =192.168.200.201:6077
+
+;[nightingale_address]海岭数据同步 8092
+; nightingale_address        =192.168.200.41:8092
+
+;[frequency]
+frequency          =144
+
+;[kafka_ip]
+;kafka_ipa          ="172.18.70.8:9092"
+;kafka_ipb          ="172.18.70.17:9092"
+;kafka_ipc          ="172.18.70.18:9092"
+;ddkafka_topic      ="billExitDataCollectTopic"
+;zdzkafka_topic     ="zdzBillExitDataCollectTopic"
+
