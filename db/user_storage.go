@@ -20,24 +20,14 @@ func QueryUserLoginmsg(username string) (error, *types.BSysYongh) {
 
 }
 
-/*
 //用户注册 插入数据库
-func UserInsert(data *types.BJsjkJiesjkptyhb) error {
+func UserInsert(data *types.BSysYongh) error {
 	db := utils.GormClient.Client
-	user := new(types.BJsjkJiesjkptyhb)
-	//赋值
-	user.FNbYonghid = data.FNbYonghid //   '用户id',//手机号 或者任意6位数字
-	user.FVcYonghmm = data.FVcYonghmm //   '用户密码',
-	user.FVcShoujh = data.FVcShoujh   //   '手机号',
-	user.FVcYoux = data.FVcYoux       //   '邮箱',
-	user.FVcYonghnc = data.FVcYonghnc // '用户昵称',
-
-	if err := db.Table("b_jsjk_jiesjkptyhb").Create(&user).Error; err != nil {
+	if err := db.Table("b_sys_yongh").Create(&data).Error; err != nil {
 		// 错误处理...
-		logrus.Println("Insert b_jsjk_jiesjkptyhb error", err)
+		logrus.Println("Insert b_sys_yongh error", err)
 		return err
 	}
 	logrus.Println("用户表插入成功！")
 	return nil
 }
-*/

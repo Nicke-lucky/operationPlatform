@@ -32,27 +32,24 @@ func QueryTable(tablename string) {
 //1、Insert b_jsjk_jiestj 新增结算统计
 func InsertTabledata(lx int) error {
 	db := utils.GormClient.Client
-	Jiestj := new(types.BJsjkJiestj)
+	Jiestj := new(types.BJsJiessj)
 	//赋值
-	Jiestj.FNbKawlh = lx //统计类型 10000 ：省外
+	Jiestj.FNbJusbj = lx //统计类型 10000 ：省外
 
-	Jiestj.FDtKaistjsj = utils.StrTimeToNowtime()           //开始统计时间
-	Jiestj.FDtTongjwcsj = utils.StrTimeTodefaultdate()      //统计完成时间
-	Jiestj.FVcTongjrq = utils.StrTimeTodefaultdatetimestr() //统计日期
 	if err := db.Table("b_jsjk_jiestj").Create(&Jiestj).Error; err != nil {
 		// 错误处理...
 		log.Println("Insert b_jsjk_jiestj error", err)
 		return err
 	}
-	log.Println("省外-结算统计表插入成功！", "开始统计时间:=", Jiestj.FDtKaistjsj)
+	log.Println("省外-结算统计表插入成功！", "开始统计时间:=", Jiestj)
 	return nil
 }
 
 //2、 Query b_jsjk_jiestj
-func QueryTabledata(lx int) (error, *types.BJsjkJiestj) {
+func QueryTabledata(lx int) (error, *types.BJsJiessj) {
 	db := utils.GormClient.Client
 	//Jiestjs := make([]types.BJsjkJiestj, 0)
-	Jiestjs := new(types.BJsjkJiestj)
+	Jiestjs := new(types.BJsJiessj)
 	//赋值
 	if err := db.Table("b_jsjk_jiestj").Where("F_NB_KAWLH=?", lx).Last(&Jiestjs).Error; err != nil {
 		log.Println("查询 结算监控统计表最新数据时 QueryTabledata error :", err)
@@ -63,15 +60,10 @@ func QueryTabledata(lx int) (error, *types.BJsjkJiestj) {
 }
 
 //3、更新结算统计表 update b_jsjk_jiestj
-func UpdateTabledata(data *types.BJsjkJiestj, lx int, id int) error {
+func UpdateTabledata(data *types.BJsJiessj, lx int, id int) error {
 	db := utils.GormClient.Client
-	Jiestj := new(types.BJsjkJiestj)
+	Jiestj := new(types.BJsJiessj)
 
-	Jiestj.FNbZongje = data.FNbZongje
-	Jiestj.FNbZongts = data.FNbZongts
-	//Jiestj.FNbKawlh = lx //10000： 省外 3201 ：省内
-	Jiestj.FDtTongjwcsj = data.FDtTongjwcsj //统计完成时间
-	Jiestj.FVcTongjrq = data.FVcTongjrq
 	if err := db.Table("b_jsjk_jiestj").Where("F_NB_ID=?", id).Where("F_NB_KAWLH=?", lx).Updates(&Jiestj).Error; err != nil {
 		log.Println("更新结算统计表 error", err)
 		return err
