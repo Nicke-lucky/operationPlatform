@@ -15,6 +15,9 @@ func Newdb() {
 	utils.InitLogrus(conf.LogPath, conf.LogFileName, time.Duration(24*conf.LogMaxAge)*time.Hour, time.Duration(conf.LogRotationTime)*time.Hour)
 	mstr := conf.MUserName + ":" + conf.MPass + "@tcp(" + conf.MHostname + ":" + conf.MPort + ")/" + conf.Mdatabasename + "?charset=utf8&parseTime=true&loc=Local"
 	DBInit(mstr) //初始化数据库
+	Errormsg_address = conf.Errormsg_address
+	Gwmsg_address = conf.Gwmsg_address
+	Metric_address = conf.Metric_address
 }
 
 //1、查询表是否存在

@@ -35,6 +35,17 @@ ip_address          =192.168.200.201:6077
 ;[nightingale_address]海岭数据同步 8092
 ; nightingale_address        =192.168.200.41:8092
 
+;查询内存占用百分比 http://180.76.177.104:8080/etcpark/v1/metric/last
+;查询CPU占用百分比 http://180.76.177.104:8080/etcpark/v1/metric/last
+metric_address =http://180.76.177.104:8080/etcpark/v1/metric/last
+
+;查询告警信息 http://180.76.177.104:8080/etcpark/v1/alarm/list
+errormsg_address = http://180.76.177.104:8080/etcpark/v1/alarm/list
+
+;查询网关基本信息接口 http://172.18.70.22:8080/etcpark/dataserver/gateway/list
+gwmsg_address    = http://122.51.24.189:8080/etcpark/dataserver/gateway/list
+
+
 ;[frequency]
 frequency          =144
 

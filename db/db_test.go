@@ -66,3 +66,13 @@ func TestQueryGatewaydata(t *testing.T) {
 	log.Println("gwxx:", qerr, gwxx)
 
 }
+
+func TestQueryGatewayALLdata(t *testing.T) {
+	Newdb()
+	qerr, gwxxs := QueryGatewayALLdata()
+	if qerr != nil {
+		log.Println("error:", qerr, gwxxs)
+	}
+	log.Println("gwxx:", qerr, gwxxs)
+
+}

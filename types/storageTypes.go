@@ -55,7 +55,7 @@ type BDmChongq struct {
 	//) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='重启 ';
 }
 
-//CREATE TABLE `b_dm_gaoj` (
+//CREATE TABLE `b_dm_gaoj`告警  (
 type BDmGaoj struct {
 	FNbWeiyjlid int `gorm:"column:_NB_WEIYJLID; AUTO_INCREMENT ;primary_key"` //	`F_NB_WEIYJLID` int(11) NOT NULL AUTO_INCREMENT COMMENT '唯一记录ID',
 
@@ -75,7 +75,7 @@ type BDmGaoj struct {
 	//) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '告警 '
 }
 
-//CREATE TABLE `b_dm_ruanjbb` (
+//CREATE TABLE `b_dm_ruanjbb`软件版本 ' (
 type BDmRuanjbb struct {
 	FNbWeiyjlid int `gorm:"column:_NB_WEIYJLID; AUTO_INCREMENT ;primary_key"` //	`F_NB_WEIYJLID` int(11) NOT NULL AUTO_INCREMENT COMMENT '唯一记录ID',
 
@@ -93,7 +93,7 @@ type BDmRuanjbb struct {
 	//) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '软件版本 '
 }
 
-//CREATE TABLE `b_dm_ruanjgxzx` (
+//CREATE TABLE `b_dm_ruanjgxzx`软件更新执行  (
 type BDmRuanjgxzx struct {
 	FNbWeiyjlid int `gorm:"column:_NB_WEIYJLID; AUTO_INCREMENT ;primary_key"` //	`F_NB_WEIYJLID` int(11) NOT NULL AUTO_INCREMENT COMMENT '唯一记录ID',
 
@@ -111,7 +111,7 @@ type BDmRuanjgxzx struct {
 	//) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '软件更新执行 '
 }
 
-//CREATE TABLE `b_dm_tianxxx` (
+//CREATE TABLE `b_dm_tianxxx` 天线信息 (
 type BDmTianxxx struct {
 	FNbWeiyjlid int `gorm:"column:_NB_WEIYJLID; AUTO_INCREMENT ;primary_key"` //	`F_NB_WEIYJLID` int(11) NOT NULL AUTO_INCREMENT COMMENT '唯一记录ID',
 
@@ -127,7 +127,7 @@ type BDmTianxxx struct {
 	//) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT = '天线信息 '
 }
 
-//CREATE TABLE `b_dm_wanggjcxx` (
+//CREATE TABLE `b_dm_wanggjcxx`网关基础信息  (
 type BDmWanggjcxx struct {
 	FVcWanggbh    string    `gorm:"column:F_VC_WANGGBH"`    //	`F_VC_WANGGBH` varchar(32) NOT NULL COMMENT '网关编号',
 	FVcGongsID    string    `gorm:"column:F_VC_GONGSID"`    //	`F_VC_GONGSID` varchar(32) NOT NULL COMMENT '公司ID',

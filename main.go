@@ -35,16 +35,15 @@ func main() {
 	}
 	defer utils.Pool.Close()
 	utils.Redisdatabasename = conf.Redisdatabasename
+	//
+	db.Errormsg_address = conf.Errormsg_address
+	db.Gwmsg_address = conf.Gwmsg_address
+	db.Metric_address = conf.Metric_address
 
 	IpAddress := conf.IpAddress
 
 	//goroutine1
-	go db.HandleDayTasks()
-	//goroutine2
-	go db.HandleHourTasks()
-	//goroutine3
-	go db.HandleMinutesTasks()
-
+	go db.HandleSecondTasks()
 	//http处理
 	router.RouteInit(IpAddress)
 
