@@ -56,8 +56,8 @@ type QueryGatewayOneQeqdata struct {
 type AddGatewayVersionQeq struct {
 	Version     string `json:"version"`      // 软件版本号
 	VersionNote string `json:"version_note"` // 软件版本内容
-	Name        string `json:"name"`
-	FileName    string `json:"file_name"`
+	Name        string `json:"name"`         //上传者
+	FileName    string `json:"file_name"`    //文件名
 	//Time        string `json:"time"`
 }
 

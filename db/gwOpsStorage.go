@@ -246,7 +246,6 @@ func AddVersion(req *dto.AddGatewayVersionQeq) error {
 func QueryOneVersiondata(banbh string) (error, *types.BDmRuanjbb) {
 	db := utils.GormClient.Client
 	v := new(types.BDmRuanjbb)
-
 	if err := db.Table("b_dm_ruanjbb").Where("F_VC_RUANJBBH =?", banbh).First(v).Error; err != nil {
 		log.Println("查询 软件版本表数据时 error :", err)
 		return err, nil

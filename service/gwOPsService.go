@@ -10,6 +10,7 @@ func FileUpload(file []byte, fname string) {
 	//http.HandleFunc("/upload", upload)
 	//文件在服务器上的位置
 	fpath := DirPath
+	//"/root/test/info.json"
 	utils.UploadFile(file, fpath+fname)
 }
 

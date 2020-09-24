@@ -47,8 +47,7 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	//网关运维监控平台
 	//1、网关列表查询
 	route.POST("/gw/querygatewaylist", controller.Querygatewaylist)
-	//未处理告警列表查询
-	//route.GET("/gw/queryunprocessedalarmlist", controller.QueryUnprocessedAlarmlist)
+	//未处理告警列表查询 //route.GET("/gw/queryunprocessedalarmlist", controller.QueryUnprocessedAlarmlist)
 	//2、告警列表查询
 	route.POST("/gw/queryalarmlist", controller.QueryAlarmlist)
 	//3、重启记录列表查询
@@ -65,14 +64,13 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	//软件版本管理Version management
 	//8、增加网关软件更新【上传版本记录】
 	route.POST("/version/addversion", controller.AddNewVersion)
-	//8.1、上传网关软件【上传版本记录】
-	route.POST("/version/fileupload", controller.UploadVersionFile)
 	//9、查询软件版本列表
 	route.GET("/version/querygatewayversionlist", controller.QuerygatewayVersionlist)
 	//10、查看版本详情 ？？？【暂时不做】
 	//11、删除版本【可以批量删除】
 	route.POST("/version/deletegatewayupdate", controller.DeleteNewVersion)
 	//12、上传版本
+	route.POST("/version/fileupload", controller.UploadVersionFile)
 
 }
 
