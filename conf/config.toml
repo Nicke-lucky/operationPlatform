@@ -46,6 +46,17 @@ errormsg_address = http://180.76.177.104:8080/etcpark/v1/alarm/list
 gwmsg_address    = http://122.51.24.189:8080/etcpark/dataserver/gateway/list
 
 
+;[FilePath]软件版本存放路径[oss]
+filepath        ="172.18.70.8/home/ops"
+;dirpath        ="/home/ops/+fname"这里要加文件名的
+dirpath        ="/home/ops/"
+oss_host        ="192.168.200.201"
+oss_port        =22
+oss_username    =""
+oss_passwd	    =""
+
+
+
 ;[frequency]
 frequency          =144
 

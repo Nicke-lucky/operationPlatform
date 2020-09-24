@@ -272,14 +272,14 @@ type QueryRSUMsgListResp struct {
 type QueryGatewayOneResp struct {
 	TerminalId    string  `json:"terminal_id"`    // 设备ID，如CE4C37043A520C93
 	ParkName      string  `json:"park_name"`      // 停车场名称
-	Gatewayip     string  `json:"gatewayip"`      //   网关IP地址，多个地址则用”, ”分隔
+	Gatewayip     string  `json:"gateway_ip"`     //   网关IP地址，多个地址则用”, ”分隔
 	GetwayVersion string  `json:"getway_version"` //   场内网关版本号
 	WorkTime      string  `json:"work_time"`
 	RestartTime   string  `json:"restart_time"`
 	Restarts      int     `json:"restarts"`
 	CPU           float64 `json:"cpu_percent"`
 	MEMpercent    float64 `json:"mem_percent"`
-	MEM           float64 `json:"mem_percent"`
+	MEM           float64 `json:"mem"`
 	DISKpercent   float64 `json:"disk_percent"`
 	DISK          float64 `json:"disk"`
 	Network       int64   `json:"net_work"`
@@ -292,4 +292,12 @@ type QueryGatewayOneResp struct {
 	//OnlineStatus              int     `json:"online_status"` //"	"status": "1"： 在线状态 0 :离线
 	//	Parkid                    string  `json:"parkid"`        // 停车场ID
 
+}
+
+//查询软件版本列表信息
+type QueryVersionListResp struct {
+	Version     string `json:"version"`
+	Time        string `json:"time"`
+	VersionNote string `json:"version_note"`
+	Num         int    `json:"num"` //运行版本数据
 }

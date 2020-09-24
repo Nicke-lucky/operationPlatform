@@ -133,7 +133,7 @@ func GatewayDataUpdate() {
 	}
 
 	//2、获取网关使用信息
-	ErrorDataPostWithJson()
+	//ErrorDataPostWithJson()
 
 }
 

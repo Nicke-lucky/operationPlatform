@@ -10,11 +10,11 @@ type GatewayDevicedata struct {
 
 //查询网关列表请求信息
 type QueryGatewayListQeqdata struct {
-	GatewayNumber   string `json:"gw_number"  example:"gw200abc"` //设备编号 网关编号
-	ParkName        string `json:"park_name"`                     //停车场名称
-	Status          int    `json:"status"`                        //状态：2全部，1在线、0离线
-	Version         string `json:"version"`                       //软件版本
-	UpdateBeginTime string `json:"update_begin_time"`             //更新时间
+	GatewayNumber   string `json:"gw_number"`         //设备编号 网关编号
+	ParkName        string `json:"park_name"`         //停车场名称
+	Status          int    `json:"status"`            //状态：2全部，1在线、0离线
+	Version         string `json:"version"`           //软件版本
+	UpdateBeginTime string `json:"update_begin_time"` //更新时间
 	UpdateEndTime   string `json:"update_end_time"`
 }
 
@@ -46,8 +46,31 @@ type QueryRestartMsgListQeq struct {
 type QueryRSUMsgListQeq struct {
 	TerminalId string `json:"terminal_id"` // 设备ID，如CE4C37043A520C93	//网关id
 }
+
+//网关设备详情请求信息
 type QueryGatewayOneQeqdata struct {
 	TerminalId string `json:"terminal_id"` // 设备ID，如CE4C37043A520C93	//网关id
+}
+
+//增减软件版本信息的请求信息
+type AddGatewayVersionQeq struct {
+	Version     string `json:"version"`      // 软件版本号
+	VersionNote string `json:"version_note"` // 软件版本内容
+	Name        string `json:"name"`
+	FileName    string `json:"file_name"`
+	//Time        string `json:"time"`
+}
+
+//
+//增减软件版本信息的请求信息
+type AddGatewayVersionFileQeq struct {
+	FileName string `json:"file_name"`
+	File     []byte `json:"file"`
+}
+
+//deleteVersion
+type DeleteVersionQeq struct {
+	Version []string `json:"version"` // 软件版本
 }
 
 /*

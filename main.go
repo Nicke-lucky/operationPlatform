@@ -6,6 +6,7 @@ import (
 	"operationPlatform/config"
 	"operationPlatform/db"
 	"operationPlatform/router"
+	"operationPlatform/service"
 	"operationPlatform/utils"
 
 	"time"
@@ -41,9 +42,17 @@ func main() {
 	db.Metric_address = conf.Metric_address
 
 	IpAddress := conf.IpAddress
+	//软件上传的路径
+	db.FilePath = conf.FilePath
+	//软件版本上传的oss服务器配置
+	service.DirPath = conf.Dirpath
+	utils.Host = conf.Host
+	utils.Port = conf.Port
+	utils.Username = conf.Username
+	utils.Passwd = conf.Passwd
 
 	//goroutine1
-	go db.HandleSecondTasks()
+	//go db.HandleSecondTasks()
 	//http处理
 	router.RouteInit(IpAddress)
 
