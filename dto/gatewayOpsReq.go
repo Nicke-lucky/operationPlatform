@@ -18,6 +18,7 @@ type QueryGatewayListQeqdata struct {
 	UpdateEndTime   string `json:"update_end_time"`
 }
 
+//获取网关基本信息的请求体
 type GatewayDataReq struct {
 }
 

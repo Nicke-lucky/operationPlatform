@@ -40,7 +40,6 @@ func QueryGatewaydata(FVcWanggbh string) (error, *types.BDmWanggjcxx) {
 //3、更新网关信息表 根据网关编号
 func UpdateGatewaydata(Wanggbh string, gwdata *types.BDmWanggjcxx) error {
 	db := utils.GormClient.Client
-	//gwxx := new( types.BDmWanggjcxx)
 	if err := db.Table("b_dm_wanggjcxx").Where("F_VC_WANGGBH=?", Wanggbh).Updates(gwdata).Error; err != nil {
 		log.Println("更新网关基础信息表 error", err)
 		return err
@@ -115,6 +114,28 @@ func QueryErrorALLdata(req *dto.QueryErrorMsgListQeq) (error, *[]types.BDmGaoj) 
 	return nil, &gjs
 }
 
+func QueryErrordata(gwid string) (int64, error) {
+	db := utils.GormClient.Client
+	//全部设备
+	var Count int64
+	if err := db.Table("b_dm_gaoj").Where("F_VC_WANGGBH = ?", gwid).Count(&Count).Error; err != nil {
+		log.Println("查询 重启信息表ALL数据时 error :", err)
+		return 0, err
+	}
+	return Count, nil
+}
+
+func QueryUndisposedError(gwid string) (int64, error) {
+	db := utils.GormClient.Client
+	//全部设备
+	var Count int64
+	if err := db.Table("b_dm_gaoj").Where("F_VC_WANGGBH = ?", gwid).Where("F_NB_ZHUANGT=?", 0).Count(&Count).Error; err != nil {
+		log.Println("查询 重启信息表ALL数据时 error :", err)
+		return 0, err
+	}
+	return Count, nil
+}
+
 //查询重启信息
 func QueryRestartALLdata(req *dto.QueryRestartMsgListQeq) (error, *[]types.BDmChongq) {
 	db := utils.GormClient.Client
@@ -146,6 +167,19 @@ func QueryRestartOnedata(TerminalId string) (error, *types.BDmChongq) {
 	log.Println("req.TerminalId:", TerminalId)
 
 	if err := db.Table("b_dm_chongq").Where("F_VC_WANGGBH =?", TerminalId).Last(cq).Error; err != nil {
+		log.Println("查询 重启信息表One数据时 error :", err)
+		return err, nil
+	}
+	log.Println("查询重启信息表 数据，成功！数据结果:", cq.FNbChongqlxgzsc)
+	return nil, cq
+}
+
+func QueryRestartCount(TerminalId string) (error, *types.BDmChongq) {
+	db := utils.GormClient.Client
+	cq := new(types.BDmChongq)
+	log.Println("req.TerminalId:", TerminalId)
+	var Count int64
+	if err := db.Table("b_dm_chongq").Where("F_VC_WANGGBH =?", TerminalId).Count(&Count).Error; err != nil {
 		log.Println("查询 重启信息表One数据时 error :", err)
 		return err, nil
 	}
@@ -317,4 +351,16 @@ func QueryParkNameALL() (error, *[]types.BTccTingcc) {
 	}
 	log.Println("查询停车场列表 数据，成功！数据结果:", "共", len(tccs), "个停车场")
 	return nil, &tccs
+}
+
+func QueryParkName(parkid string) (error, *types.BTccTingcc) {
+	db := utils.GormClient.Client
+	tcc := new(types.BTccTingcc)
+	//全部
+	if err := db.Table("b_tcc_tingcc").Where("F_VC_TINGCCBH=?", parkid).First(&tcc).Error; err != nil {
+		log.Println("查询 停车场列表ALL数据时 error :", err)
+		return err, nil
+	}
+	log.Println("查询停车场列表 数据，成功！数据结果:", tcc.FVcTingccbh, tcc.FVcMingc)
+	return nil, tcc
 }

@@ -36,7 +36,7 @@ redis_addr          = "192.168.200.201:6379"
 redis_databasename  = 2
 
 
-;[ip_address]结算监控6089
+;[ip_address]结算监控6089 运维管理6077
 ip_address          =192.168.200.201:6077
 
 ;[nightingale_address]海岭数据同步 8092
@@ -44,6 +44,7 @@ ip_address          =192.168.200.201:6077
 
 ;查询内存占用百分比 http://180.76.177.104:8080/etcpark/v1/metric/last
 ;查询CPU占用百分比 http://180.76.177.104:8080/etcpark/v1/metric/last
+
 metric_address =http://180.76.177.104:8080/etcpark/v1/metric/last
 
 ;查询告警信息 http://180.76.177.104:8080/etcpark/v1/alarm/list
@@ -54,13 +55,13 @@ gwmsg_address    = http://122.51.24.189:8080/etcpark/dataserver/gateway/list
 
 
 ;[FilePath]软件版本存放路径[oss]
-filepath        ="172.18.70.8/home/ops"
-;dirpath        ="/home/ops/+fname"这里要加文件名的
-dirpath        ="/home/ops/"
-oss_host        ="192.168.200.201"
+filepath        ="http://192.168.200.215:22/Users/nicker/sandbox/operationPlatform/file/"
+;dirpath        ="/Users/nicker/sandbox/operationPlatform/file/"这里要加文件名的
+dirpath        ="/home/operationPlatform/file"
+oss_host        ="192.168.200.215"
 oss_port        =22
-oss_username    =""
-oss_passwd	    =""
+oss_username    ="mv"
+oss_passwd	    ="microvideo"
 
 
 

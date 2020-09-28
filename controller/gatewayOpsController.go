@@ -10,7 +10,6 @@ import (
 	"operationPlatform/service"
 	"operationPlatform/types"
 	"operationPlatform/utils"
-	"strconv"
 	"time"
 )
 
@@ -36,8 +35,22 @@ func Querygatewaylist(c *gin.Context) {
 	for _, gwxx := range *wgxxs {
 		data := new(dto.QueryGatewayListResp)
 		data.TerminalId = gwxx.FVcWanggbh // 设备ID，如CE4C37043A520C93
-		//data.Parkid = gwxx                  // 停车场ID
-		data.ParkName = gwxx.FVcTingccbh // 停车场名称
+		data.Parkid = gwxx.FVcTingccbh    // 停车场ID
+		qpkerr, pm := db.QueryParkName(gwxx.FVcTingccbh)
+		if qpkerr != nil {
+			if fmt.Sprint(qpkerr) == "record not found" {
+				log.Println("err== `record not found`:", qpkerr)
+
+			} else {
+				log.Println("++++++++++++++++++++++++++++++++查询停车场名称错误")
+			}
+		}
+		if pm == nil {
+			data.ParkName = gwxx.FVcTingccbh // 停车场名称
+		} else {
+			data.ParkName = pm.FVcMingc // 停车场名称
+		}
+
 		//data.CompanyId = gwxx               // 公司ID
 		//data.CompanyName = gwxx             // 公司ID
 		data.OnlineStatus = gwxx.FNbZhuangt //"	"status": "1"： 在线状态 0 :离线
@@ -52,9 +65,10 @@ func Querygatewaylist(c *gin.Context) {
 		data.Restarts = gwxx.FNbChongqcs
 		data.GetwayVersion = gwxx.FVcDangqbbh //   场内网关当前版本号
 
-		data.LastversionUpdatedatetime = gwxx.FDtZuihgxsj.Format("2006-01-02 15:04:05") //   场内网关最后更新成功时间
+		data.LastversionUpdatedatetime = gwxx.FDtZuijgxbbsj.Format("2006-01-02 15:04:05") //   场内网关最后更新成功时间
 		data.RsuNum = gwxx.FNbTianxsl
 		data.Network = gwxx.FNbWanglyc
+		data.Flag = false
 		datas = append(datas, *data)
 	}
 	//2、返回数据
@@ -81,15 +95,17 @@ func QueryAlarmlist(c *gin.Context) {
 		return
 	}
 	//
-	if req.TerminalId != "" {
+	if req.TerminalId == "" {
 		//1、查询设备编号
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询告警列表,获取请求参数时 设备id 不能为空"})
+		return
 	}
 
 	//1.获取告警列表数据
 	qerr, gjs := db.QueryErrorALLdata(&req)
 	if qerr != nil {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询告警列表时 error"})
+		return
 	}
 	datas := make([]dto.QueryErrorListResp, 0)
 	for _, gaoj := range *gjs {
@@ -116,15 +132,17 @@ func QueryRestartRecordlist(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询重启记录列表,获取请求参数时 error"})
 		return
 	}
-	if req.TerminalId != "" {
+	if req.TerminalId == "" {
 		//1、查询设备编号
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询重启记录列表,获取请求参数时 设备id 不能为空"})
+		return
 	}
 
 	//1.获取重启记录列表数据
 	qerr, cqs := db.QueryRestartALLdata(&req)
 	if qerr != nil {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询重启记录列表时 error"})
+		return
 	}
 	datas := make([]dto.QueryRestartListResp, 0)
 	for _, chongq := range *cqs {
@@ -152,14 +170,16 @@ func QueryRSURecordlist(c *gin.Context) {
 	qerr, txs := db.QueryRSUALLdata(req.TerminalId)
 	if qerr != nil {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询重启记录列表时 error"})
+		return
 	}
 	datas := make([]dto.QueryRSUMsgListResp, 0)
 	for _, tx := range *txs {
 		data := new(dto.QueryRSUMsgListResp)
 		data.TerminalId = tx.FVcWanggbh
-		data.RSUIP = tx.FVcIpdz                       // 天线ip
-		data.Lane = tx.FVcChedwyid                    // 车道
-		data.WorkTime = strconv.Itoa(tx.FNbLianxgzsc) //秒
+		data.RSUIP = tx.FVcIpdz    // 天线ip
+		data.Lane = tx.FVcChedwyid // 车道
+
+		data.WorkTime = utils.SecondsToTime(tx.FNbLianxgzsc) //秒
 		datas = append(datas, *data)
 	}
 	//2、返回数据
@@ -179,6 +199,7 @@ func QueryGatewayDeviceDetails(c *gin.Context) {
 	qerr, wgxx := db.QueryOneGatewaydata(&req)
 	if qerr != nil {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询网关列表时 error"})
+		return
 	}
 	//数据赋值
 	data := new(dto.QueryGatewayOneResp)
@@ -196,6 +217,7 @@ func QueryGatewayDeviceDetails(c *gin.Context) {
 	qerr, txs := db.QueryRSUALLdata(req.TerminalId)
 	if qerr != nil {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询天线记录列表时 error"})
+		return
 	}
 	data.Restarts = len(*txs)
 
@@ -239,7 +261,7 @@ func Addgatewaydevice(c *gin.Context) {
 	//gwxx.FVcGongsID    = //	`F_VC_GONGSID` varchar(32) NOT NULL COMMENT '公司ID',
 
 	gwxx.FVcTingccbh = req.ParkName //	`F_VC_TINGCCBH` varchar(32) NOT NULL COMMENT '停车场编号',
-	gwxx.FNbZhuangt = 0             //	`F_NB_ZHUANGT` int(11) NOT NULL DEFAULT '0' COMMENT '状态 0：离线、1：在线',
+	gwxx.FNbZhuangt = 0             //	'状态 0：离线、1：在线',
 	gwxx.FNbGaojzs = 0              //	`F_NB_GAOJZS` int(11) NOT NULL DEFAULT '0' COMMENT '告警总数',
 	gwxx.FNbWeiclgjs = 0            //	`F_NB_WEICLGJS` int(11) NOT NULL DEFAULT '0' COMMENT '未处理告警数',
 	gwxx.FNbChongqcs = 0            //	`F_NB_CHONGQCS` int(11) NOT NULL DEFAULT '0' COMMENT '重启次数',
@@ -247,6 +269,7 @@ func Addgatewaydevice(c *gin.Context) {
 	gwxx.FNbWanglyc = 0             //	`F_NB_WANGLYC` bigint(20) DEFAULT NULL COMMENT '网络延迟 单位：ms',
 	gwxx.FDtChuangjsj = time.Now()  //	`F_DT_CHUANGJSJ` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 	gwxx.FDtZuihgxsj = time.Now()
+	gwxx.FDtZuijgxbbsj = time.Now()
 	//3、插入数据
 
 	//插入前先校验数据
@@ -444,7 +467,10 @@ func QueryparkNamelist(c *gin.Context) {
 	}
 	var resp dto.QueryParkNamesResp
 	for _, data := range *datas {
-		resp.ParkNames = append((resp.ParkNames), data.FVcMingc)
+		p := new(dto.ParkMSG)
+		p.ParkNum = data.FVcTingccbh
+		p.ParkName = data.FVcMingc
+		resp.Parkmsg = append((resp.Parkmsg), *p)
 	}
 	//2、返回数据
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: resp, Message: "获取停车场下拉框成功"})

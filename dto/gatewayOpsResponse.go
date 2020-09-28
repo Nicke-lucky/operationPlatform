@@ -39,8 +39,9 @@ type GatewayDeviceMsgResp struct {
 
 type GatewayDeviceMsg struct {
 	MsgHead                   GatewayDeviceMsgHead `json:"msghead"`
-	ProgrameRuntime           string               `json:"programe_runtime"`           //   网关运行时间，秒
 	UpdateTime                string               `json:"updatetime"`                 //采集时间
+	NetWorkDelay              int64                `json:"networkdelay"`               //网络延迟 ms
+	ProgrameRuntime           string               `json:"programe_runtime"`           //   网关运行时间，秒
 	Deviceid                  string               `json:"deviceid"`                   //   设备ID
 	Gatewayip                 string               `json:"gatewayip"`                  //   网关IP地址，多个地址则用”, ”分隔
 	GetwayVersion             string               `json:"getway_version"`             //   场内网关版本号
@@ -239,6 +240,7 @@ type QueryGatewayListResp struct {
 	LastversionUpdatedatetime string  `json:"lastversion_updatedatetime"` //   场内网关最后更新成功时间
 	RsuNum                    int     `json:"rsu_num"`
 	Network                   int64   `json:"net_work"`
+	Flag                      bool    `json:"flag"` //前端需要的一个标记
 }
 
 //告警信息查询
@@ -311,5 +313,10 @@ type QueryGatewaysResp struct {
 }
 
 type QueryParkNamesResp struct {
-	ParkNames []string `json:"park_name"` // 软件版本号
+	Parkmsg []ParkMSG `json:"parkmsg"`
+}
+
+type ParkMSG struct {
+	ParkName string `json:"park_name"` //停车场名称
+	ParkNum  string `json:"park_id"`   // 停车场编号
 }

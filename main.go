@@ -52,7 +52,7 @@ func main() {
 	utils.Passwd = conf.Passwd
 
 	//goroutine1
-	//go db.HandleSecondTasks()
+	go db.HandleSecondTasks()
 	//http处理
 	router.RouteInit(IpAddress)
 
