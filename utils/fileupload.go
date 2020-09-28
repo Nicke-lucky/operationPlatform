@@ -111,6 +111,8 @@ func (cliConf *ClientConfig) UploadByte(srcdata []byte, dstPath string) {
 		_ = dstFile.Close()
 	}()
 	_, _ = dstFile.Write(srcdata[:])
+
+	//我方应该收到应答呀1
 	fmt.Println(cliConf.RunShell(fmt.Sprintf("ls %s", dstPath)))
 }
 

@@ -6,7 +6,8 @@ const (
 	StatusProcessing         = 102 // RFC 2518, 10.1
 	StatusEarlyHints         = 103 // RFC 8297
 
-	StatusSuccessfully = 200 //成功
+	StatusSuccessfully    = 200 //成功
+	StatusADDSuccessfully = 201 //添加成功
 
 	StatusGETRedisError = 600 //getredis 错误
 	StatusSETRedisError = 601 //setredis 错误
@@ -48,6 +49,7 @@ var statusText = map[int]string{
 	StatusUpdateDataError:      "UpdateData Error", //更新数据库表 错误
 	StatusDeleteDataError:      "DeleteData Error", //删除数据库表 错误
 	StatusDataISExist:          "Data IS Exist",
+	StatusADDSuccessfully:      "ADD Successfully",
 }
 
 // StatusText returns a text for the HTTP status code. It returns the empty

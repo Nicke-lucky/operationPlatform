@@ -229,7 +229,7 @@ type QueryGatewayListResp struct {
 	Gatewayip                 string  `json:"gatewayip"`     //   网关IP地址，多个地址则用”, ”分隔
 	CPU                       float64 `json:"cpu_percent"`
 	MEMpercent                float64 `json:"mem_percent"`
-	MEM                       float64 `json:"mem_percent"`
+	MEM                       float64 `json:"mem"`
 	DISKpercent               float64 `json:"disk_percent"`
 	DISK                      float64 `json:"disk"`
 	UnprocessedErrors         int     `json:"unprocessed_errors"`
@@ -300,4 +300,16 @@ type QueryVersionListResp struct {
 	Time        string `json:"time"`
 	VersionNote string `json:"version_note"`
 	Num         int    `json:"num"` //运行版本数据
+}
+
+type QueryVersionsResp struct {
+	Version []string `json:"version"` // 软件版本号
+}
+
+type QueryGatewaysResp struct {
+	TerminalId []string `json:"terminal_id"` // 软件版本号
+}
+
+type QueryParkNamesResp struct {
+	ParkNames []string `json:"park_name"` // 软件版本号
 }

@@ -62,15 +62,23 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	//7、远程连接  ？？？？[暂时不做]
 
 	//软件版本管理Version management
-	//8、增加网关软件更新【上传版本记录】
+	//8、增加网关软件更新的版本【上传版本记录】
 	route.POST("/version/addversion", controller.AddNewVersion)
 	//9、查询软件版本列表
-	route.GET("/version/querygatewayversionlist", controller.QuerygatewayVersionlist)
+	route.POST("/version/querygatewayversionlist", controller.QuerygatewayVersionlist)
 	//10、查看版本详情 ？？？【暂时不做】
-	//11、删除版本【可以批量删除】
-	route.POST("/version/deletegatewayupdate", controller.DeleteNewVersion)
-	//12、上传版本
+	//11、删除软件版本【可以批量删除】
+	route.POST("/version/deleteversion", controller.DeleteNewVersion)
+	//12、上传版本文件
 	route.POST("/version/fileupload", controller.UploadVersionFile)
+
+	//下拉框
+	//软件版本下拉框
+	route.GET("/version/queryversionlist", controller.QueryVersionlist)
+	//网关设备下拉框
+	route.GET("/version/querygatewaylist", controller.QueryGatewaylist)
+	//停车场下拉框
+	route.GET("/version/queryparknamelist", controller.QueryparkNamelist)
 
 }
 

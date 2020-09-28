@@ -30,15 +30,22 @@ type QueryErrorMsgQeq struct {
 //告警信息列表请求信息
 type QueryErrorMsgListQeq struct {
 	TerminalId string `json:"terminal_id"` // 设备ID，如CE4C37043A520C93	//网关id
-	Status     int    `json:"status"`      //处理状态 0：未处理的告警，1已处理的告警，2全部展示
-	BeginTime  string `json:"Begin_time"`  //起始时间，告警 时间
+	Status     int    `json:"status"`      //处理状态 2所有  1:已处理 0:未处理
+	BeginTime  string `json:"begin_time"`  //起始时间，告警 时间
 	EndTime    string `json:"end_time"`    //结束时间，告警 时间
 }
+
+/*{
+  "terminal_id": "gw1115",
+  "status": 2,
+  "begin_time":"2020-09-01 00:00:00",
+ "end_time":"2020-09-22 23:59:59"
+}*/
 
 //重启列表请求信息
 type QueryRestartMsgListQeq struct {
 	TerminalId string `json:"terminal_id"` // 设备ID，如CE4C37043A520C93	//网关id
-	BeginTime  string `json:"Begin_time"`  //重启列表请求起始时间
+	BeginTime  string `json:"begin_time"`  //重启列表请求起始时间
 	EndTime    string `json:"end_time"`    //重启列表请求结束时间
 }
 
@@ -66,6 +73,12 @@ type AddGatewayVersionQeq struct {
 type AddGatewayVersionFileQeq struct {
 	FileName string `json:"file_name"`
 	File     []byte `json:"file"`
+}
+
+type QueryVersionQeq struct {
+	BeginTime string `json:"begin_time"` //"0"：全部
+	EndTime   string `json:"end_time"`   //"0"：全部
+	Version   string `json:"version"`    //"0"：全部
 }
 
 //deleteVersion

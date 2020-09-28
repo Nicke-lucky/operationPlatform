@@ -6,10 +6,17 @@
 ;mysql_pass         = JStxb0408@
 ;mysql_databasename = payflow
 ; [mysql测试]
-mysql_hostname     =122.51.24.189
-mysql_port         = 3307
+;mysql_hostname     =122.51.24.189
+;mysql_port         = 3307
+;mysql_user         = root
+;mysql_pass         = Microvideo_1
+;mysql_databasename = payflow
+
+; [mysql本地]
+mysql_hostname     =127.0.0.1
+mysql_port         = 3306
 mysql_user         = root
-mysql_pass         = Microvideo_1
+mysql_pass         = shx19930509321
 mysql_databasename = payflow
 
 ;日志配置

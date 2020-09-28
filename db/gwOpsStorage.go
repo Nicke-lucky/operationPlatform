@@ -29,7 +29,7 @@ func QueryGatewaydata(FVcWanggbh string) (error, *types.BDmWanggjcxx) {
 	db := utils.GormClient.Client
 	gwxx := new(types.BDmWanggjcxx)
 	//赋值
-	if err := db.Table("b_dm_wanggjcxx").Where("F_VC_WANGGBH=?", FVcWanggbh).Last(gwxx).Error; err != nil {
+	if err := db.Table("b_dm_wanggjcxx").Where("F_VC_WANGGBH =?", FVcWanggbh).Last(gwxx).Error; err != nil {
 		log.Println("查询 网关基础信息表最新数据时 QueryTabledata error :", err)
 		return err, nil
 	}
@@ -54,95 +54,35 @@ func QueryGatewayALLdata(req *dto.QueryGatewayListQeqdata) (error, *[]types.BDmW
 	db := utils.GormClient.Client
 	gwxxs := make([]types.BDmWanggjcxx, 0)
 	log.Println("req:", req)
-
-	//1、校验参数 默认选择全部
-	//GatewayNumber    //设备编号 默认全部：0
-	//ParkName         //停车场名称 默认全部：0
-	//Status           //状态：2全部，1在线、0离线
-	//Version          //软件版本
-	//UpdateBeginTime  //起始时间
-	//UpdateEndTime    //结束时间
-
-	//全部
-	if req.GatewayNumber == "0" && req.ParkName == "0" && req.Status == 2 && req.Version == "0" && req.UpdateEndTime == "0" && req.UpdateBeginTime == "0" {
-		if err := db.Table("b_dm_wanggjcxx").Find(&gwxxs).Error; err != nil {
-			log.Println("查询 网关基础信息表ALL数据时 error :", err)
-			return err, nil
-		}
-		log.Println("查询网关基础信息表 数据，成功！数据结果:", "共", len(gwxxs), "个设备")
-		return nil, &gwxxs
-	} else {
-
+	mytable := db.Table("b_dm_wanggjcxx")
+	//全部设备
+	if req.GatewayNumber != "" {
 		//1、查询设备编号
-		if req.GatewayNumber != "0" && req.ParkName == "0" && req.Status == 2 && req.Version == "0" && req.UpdateEndTime == "0" && req.UpdateBeginTime == "0" {
-			if err := db.Table("b_dm_wanggjcxx").Where("F_VC_WANGGBH = ?", req.GatewayNumber).Find(&gwxxs).Error; err != nil {
-				log.Println("查询 网关基础信息表ALL数据时 error :", err)
-				return err, nil
-			}
-			log.Println("查询网关基础信息表 数据，成功！数据结果:", "共", len(gwxxs), "个设备")
-			return nil, &gwxxs
-		} else {
-
-			//2、查询停车场
-			if req.GatewayNumber == "0" && req.ParkName != "0" && req.Status == 2 && req.Version == "0" && req.UpdateEndTime == "0" && req.UpdateBeginTime == "0" {
-				if err := db.Table("b_dm_wanggjcxx").Where("FVcTingccbh = ?", req.ParkName).Find(&gwxxs).Error; err != nil {
-					log.Println("查询 网关基础信息表ALL数据时 error :", err)
-					return err, nil
-				}
-				log.Println("查询网关基础信息表 数据，成功！数据结果:", "共", len(gwxxs), "个设备")
-				return nil, &gwxxs
-			} else {
-				//3、查询状态[]
-				if req.GatewayNumber == "0" && req.ParkName == "0" && req.Status != 2 && req.Version == "0" && req.UpdateEndTime == "0" && req.UpdateBeginTime == "0" {
-					if err := db.Table("b_dm_wanggjcxx").Where("F_NB_ZHUANGT = ?", req.Status).Find(&gwxxs).Error; err != nil {
-						log.Println("查询 网关基础信息表ALL数据时 error :", err)
-						return err, nil
-					}
-					log.Println("查询网关基础信息表 数据，成功！数据结果:", "共", len(gwxxs), "个设备")
-					return nil, &gwxxs
-				} else {
-					//4、查询版本【】
-					if req.GatewayNumber == "0" && req.ParkName == "0" && req.Status == 2 && req.Version != "0" && req.UpdateEndTime == "0" && req.UpdateBeginTime == "0" {
-						if err := db.Table("b_dm_wanggjcxx").Where("F_VC_DANGQBBH = ?", req.Version).Find(&gwxxs).Error; err != nil {
-							log.Println("查询 网关基础信息表ALL数据时 error :", err)
-							return err, nil
-						}
-						log.Println("查询网关基础信息表 数据，成功！数据结果:", "共", len(gwxxs), "个设备")
-						return nil, &gwxxs
-					} else {
-						//5、查询时间【】
-						if req.GatewayNumber == "0" && req.ParkName == "0" && req.Status == 2 && req.Version == "0" && req.UpdateEndTime != "0" && req.UpdateBeginTime != "0" {
-							if err := db.Table("b_dm_wanggjcxx").Where("F_DT_ZUIHGXSJ >=", req.UpdateBeginTime+" 00:00:00").Where("F_DT_ZUIHGXSJ <=", req.UpdateEndTime+" 23:59:59").Find(&gwxxs).Error; err != nil {
-								log.Println("查询 网关基础信息表ALL数据时 error :", err)
-								return err, nil
-							}
-							log.Println("查询网关基础信息表 数据，成功！数据结果:", "共", len(gwxxs), "个设备")
-							return nil, &gwxxs
-						} else {
-							//6、停车场、状态
-							if req.GatewayNumber == "0" && req.ParkName != "0" && req.Status != 2 && req.Version == "0" && req.UpdateEndTime == "0" && req.UpdateBeginTime == "0" {
-								if err := db.Table("b_dm_wanggjcxx").Where("F_NB_ZHUANGT = ?", req.Status).Where("FVcTingccbh = ?", req.ParkName).Find(&gwxxs).Error; err != nil {
-									log.Println("查询 网关基础信息表ALL数据时 error :", err)
-									return err, nil
-								}
-								log.Println("查询网关基础信息表 数据，成功！数据结果:", "共", len(gwxxs), "个设备")
-								return nil, &gwxxs
-							} else {
-								//7、全部
-								if err := db.Table("b_dm_wanggjcxx").Find(&gwxxs).Error; err != nil {
-									log.Println("查询 网关基础信息表ALL数据时 error :", err)
-									return err, nil
-								}
-								log.Println("查询网关基础信息表 数据，成功！数据结果:", "共", len(gwxxs), "个设备")
-								return nil, &gwxxs
-							}
-						}
-					}
-				}
-			}
-		}
-
+		mytable = mytable.Where("F_VC_WANGGBH = ?", req.GatewayNumber)
 	}
+	if req.ParkName != "" {
+		//2、查询停车场
+		mytable = mytable.Where("F_VC_TINGCCBH = ?", req.ParkName)
+	}
+	if req.Status != 2 {
+		//3、查询状态[]
+		mytable = mytable.Where("F_NB_ZHUANGT = ?", req.Status)
+	}
+	if req.Version != "" {
+		//4、查询版本【】
+		mytable = mytable.Where("F_VC_DANGQBBH = ?", req.Version)
+	}
+	if req.UpdateEndTime != "" || req.UpdateBeginTime != "" {
+		//5、查询时间【】
+		mytable = mytable.Where("F_DT_ZUIHGXSJ>=?", req.UpdateBeginTime+" 00:00:00").Where("F_DT_ZUIHGXSJ<=?", req.UpdateEndTime+" 23:59:59")
+	}
+
+	if err := mytable.Find(&gwxxs).Error; err != nil {
+		log.Println("查询 网关基础信息表ALL数据时 error :", err)
+		return err, nil
+	}
+	log.Println("查询网关基础信息表 数据，成功！数据结果:", "共", len(gwxxs), "个设备")
+	return nil, &gwxxs
 }
 
 //查询告警信息
@@ -150,11 +90,24 @@ func QueryErrorALLdata(req *dto.QueryErrorMsgListQeq) (error, *[]types.BDmGaoj) 
 	db := utils.GormClient.Client
 	gjs := make([]types.BDmGaoj, 0)
 	log.Println("req:", req)
+	mytable := db.Table("b_dm_gaoj")
+	//全部设备
+	if req.TerminalId != "" {
+		//1、查询设备编号
+		mytable = mytable.Where("F_VC_WANGGBH = ?", req.TerminalId)
+	}
+	if req.Status != 2 {
+		//3、查询状态[]
+		mytable = mytable.Where("F_NB_ZHUANGT = ?", req.Status)
+	}
+	if req.BeginTime != "" || req.EndTime != "" {
+		//5、查询时间【】
+		mytable = mytable.Where("F_DT_GAOJSJ >=?", req.BeginTime+" 00:00:00").Where("F_DT_GAOJSJ <=?", req.EndTime+" 23:59:59")
+	}
 
 	//1、校验参数 默认选择全部
 	//网关设备id
-
-	if err := db.Table("b_dm_wanggjcxx").Where("F_VC_WANGGBH =?", req.TerminalId).Find(&gjs).Error; err != nil {
+	if err := mytable.Find(&gjs).Error; err != nil {
 		log.Println("查询 告警信息表ALL数据时 error :", err)
 		return err, nil
 	}
@@ -167,13 +120,18 @@ func QueryRestartALLdata(req *dto.QueryRestartMsgListQeq) (error, *[]types.BDmCh
 	db := utils.GormClient.Client
 	gjs := make([]types.BDmChongq, 0)
 	log.Println("req:", req)
+	mytable := db.Table("b_dm_chongq")
+	if req.TerminalId != "" {
+		//1、查询设备编号
+		mytable = mytable.Where("F_VC_WANGGBH = ?", req.TerminalId)
+	}
 
-	//1、校验参数 默认选择全部
-	//	TerminalId string `json:"terminal_id"` // 设备ID，如CE4C37043A520C93	网关设备id
-	//	BeginTime  string `json:"Begin_time"`  //重启列表请求起始时间
-	//	EndTime    string `json:"end_time"`    //重启列表请求结束时间
+	if req.BeginTime != "" || req.EndTime != "" {
+		//5、查询时间【】
+		mytable = mytable.Where("F_DT_CHONGQSJ >= ?", req.BeginTime+" 00:00:00").Where("F_DT_CHONGQSJ <= ?", req.EndTime+" 23:59:59")
+	}
 
-	if err := db.Table("b_dm_chongq").Where("F_VC_WANGGBH =?", req.TerminalId).Find(&gjs).Error; err != nil {
+	if err := mytable.Find(&gjs).Error; err != nil {
 		log.Println("查询 重启信息表ALL数据时 error :", err)
 		return err, nil
 	}
@@ -186,11 +144,12 @@ func QueryRestartOnedata(TerminalId string) (error, *types.BDmChongq) {
 	db := utils.GormClient.Client
 	cq := new(types.BDmChongq)
 	log.Println("req.TerminalId:", TerminalId)
-	if err := db.Table("b_dm_chongq").Where("F_VC_WANGGBH =?", TerminalId).Last(&cq).Error; err != nil {
+
+	if err := db.Table("b_dm_chongq").Where("F_VC_WANGGBH =?", TerminalId).Last(cq).Error; err != nil {
 		log.Println("查询 重启信息表One数据时 error :", err)
 		return err, nil
 	}
-	log.Println("查询重启信息表 数据，成功！数据结果:")
+	log.Println("查询重启信息表 数据，成功！数据结果:", cq.FNbChongqlxgzsc)
 	return nil, cq
 }
 
@@ -218,7 +177,7 @@ func QueryOneGatewaydata(req *dto.QueryGatewayOneQeqdata) (error, *types.BDmWang
 		log.Println("查询 网关基础信息表ALL数据时 error :", err)
 		return err, nil
 	}
-	log.Println("查询网关基础信息表 数据，成功！数据结果:")
+	log.Println("查询网关基础信息表 数据，成功！数据结果:", gwxx.FVcWanggbh)
 	return nil, gwxx
 }
 
@@ -246,7 +205,7 @@ func AddVersion(req *dto.AddGatewayVersionQeq) error {
 func QueryOneVersiondata(banbh string) (error, *types.BDmRuanjbb) {
 	db := utils.GormClient.Client
 	v := new(types.BDmRuanjbb)
-	if err := db.Table("b_dm_ruanjbb").Where("F_VC_RUANJBBH =?", banbh).First(v).Error; err != nil {
+	if err := db.Table("b_dm_ruanjbb").Where("F_VC_RUANJBBH =?", banbh).Last(v).Error; err != nil {
 		log.Println("查询 软件版本表数据时 error :", err)
 		return err, nil
 	}
@@ -255,11 +214,22 @@ func QueryOneVersiondata(banbh string) (error, *types.BDmRuanjbb) {
 }
 
 //查询软件版本列表
-func QueryVersionALLdata() (error, *[]types.BDmRuanjbb) {
+func QueryVersionALLdata(req *dto.QueryVersionQeq) (error, *[]types.BDmRuanjbb) {
 	db := utils.GormClient.Client
 	vs := make([]types.BDmRuanjbb, 0)
-	//除去删除的软件版本
-	if err := db.Table("b_dm_ruanjbb").Not("F_NB_ZHUANGT =?", 1).Find(&vs).Error; err != nil {
+	//全部
+	mytable := db.Table("b_dm_ruanjbb")
+	if req.Version != "" {
+		//1、查询设备编号
+		mytable = mytable.Where("F_VC_RUANJBBH =?", req.Version)
+	}
+
+	if req.BeginTime != "" || req.EndTime != "" {
+		//5、查询上传时间
+		mytable = mytable.Where("F_DT_SHANGCSJ = ?", req.BeginTime).Where("F_DT_SHANGCSJ = ?", req.EndTime)
+	}
+	//去除删除的
+	if err := mytable.Not("F_NB_ZHUANGT = ?", 1).Find(&vs).Error; err != nil {
 		log.Println("查询 软件版本表ALL数据时 error :", err)
 		return err, nil
 	}
@@ -267,21 +237,22 @@ func QueryVersionALLdata() (error, *[]types.BDmRuanjbb) {
 	return nil, &vs
 }
 
-//查询软件版本更新次数
+//查询软件版本设备使用数
 func QueryVersionNumdata(banbh string) (error, int) {
 	db := utils.GormClient.Client
 	vs := make([]types.BDmRuanjgxzx, 0)
 	//除去删除的软件版本
-	if err := db.Table("b_dm_ruanjgxzx").Where("F_VC_RUANJBBH =?", banbh).Where("F_NB_ZHUANGT=?", 1).Find(&vs).Error; err != nil {
+	//软件更新执行表  状态 0：未完成、1：已完成更新
+	if err := db.Table("b_dm_ruanjgxzx").Where("F_VC_RUANJBBH = ?", banbh).Where("F_NB_ZHUANGT = ?", 1).Find(&vs).Error; err != nil {
 		if fmt.Sprint(err) == "record not found" {
 			log.Println("  err== `record not found`:", err)
 			return nil, 0
 		} else {
-			log.Println("查询 软件版本表ALL数据时 error :", err)
+			log.Println("查询 软件更新执行表ALL数据时 error :", err)
 			return err, 0
 		}
 	}
-	log.Println("查询软件版本表 数据，成功！数据结果:", "共", len(vs), "次数")
+	log.Println("查询软件版本设备使用数，查询软件更新执行表 数据，成功！数据结果:", "共", len(vs), "次数")
 	return nil, len(vs)
 }
 
@@ -291,11 +262,11 @@ func DeleteVersionsdata(req *dto.DeleteVersionQeq) error {
 	//删除软件版本
 	for _, v := range req.Version {
 		version := new(types.BDmRuanjbb)
-		version.FNbZhuangt = 1
-		if err := db.Table("b_dm_ruanjgxzx").Where("F_VC_RUANJBBH =?", v).Update(version).Error; err != nil {
+		version.FNbZhuangt = 1 //1表示删除
+		if err := db.Table("b_dm_ruanjbb").Where("F_VC_RUANJBBH = ?", v).Update(version).Error; err != nil {
 			if fmt.Sprint(err) == "record not found" {
 				log.Println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++err== `record not found`:", err)
-				return nil
+				continue
 			} else {
 				log.Println("删除 软件版本表 数据时 error :", err)
 				return err
@@ -303,5 +274,47 @@ func DeleteVersionsdata(req *dto.DeleteVersionQeq) error {
 		}
 		log.Println("删除软件版本表 数据，成功")
 	}
+	log.Println("批量删除软件版本表数据，成功", len(req.Version))
 	return nil
+}
+
+//查询软件版本列表下拉框
+func QueryVersionALL() (error, *[]types.BDmRuanjbb) {
+	db := utils.GormClient.Client
+	vs := make([]types.BDmRuanjbb, 0)
+	//全部
+	//除去删除的软件版本
+	//按时间排序
+	if err := db.Table("b_dm_ruanjbb").Not("F_NB_ZHUANGT = ?", 1).Order("F_DT_SHANGCSJ desc").Find(&vs).Error; err != nil {
+		log.Println("查询 软件版本表ALL数据时 error :", err)
+		return err, nil
+	}
+	log.Println("查询软件版本表 数据，成功！数据结果:", "共", len(vs), "个版本")
+	return nil, &vs
+}
+
+//查询设备列表下拉框
+func QueryGatewayALL() (error, *[]types.BDmWanggjcxx) {
+	db := utils.GormClient.Client
+	gws := make([]types.BDmWanggjcxx, 0)
+	//全部
+	if err := db.Table("b_dm_wanggjcxx").Find(&gws).Error; err != nil {
+		log.Println("查询 设备列表ALL数据时 error :", err)
+		return err, nil
+	}
+	log.Println("查询设备列表 数据，成功！数据结果:", "共", len(gws), "个网关设备")
+	return nil, &gws
+}
+
+//查询停车场下拉框
+func QueryParkNameALL() (error, *[]types.BTccTingcc) {
+	db := utils.GormClient.Client
+	tccs := make([]types.BTccTingcc, 0)
+	//全部
+	if err := db.Table("b_tcc_tingcc").Find(&tccs).Error; err != nil {
+		log.Println("查询 停车场列表ALL数据时 error :", err)
+		return err, nil
+	}
+	log.Println("查询停车场列表 数据，成功！数据结果:", "共", len(tccs), "个停车场")
+	return nil, &tccs
 }

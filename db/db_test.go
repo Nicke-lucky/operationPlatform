@@ -69,7 +69,19 @@ func TestQueryGatewaydata(t *testing.T) {
 
 func TestQueryGatewayALLdata(t *testing.T) {
 	Newdb()
-	qerr, gwxxs := QueryGatewayALLdata()
+	//qerr, gwxxs := QueryGatewayALLdata()
+	//if qerr != nil {
+	//	log.Println("error:", qerr, gwxxs)
+	//}
+	//log.Println("gwxx:", qerr, gwxxs)
+
+}
+
+//
+
+func TestQueryRestartOnedata(t *testing.T) {
+	Newdb()
+	qerr, gwxxs := QueryRestartOnedata("gw1111")
 	if qerr != nil {
 		log.Println("error:", qerr, gwxxs)
 	}

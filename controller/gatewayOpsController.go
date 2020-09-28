@@ -25,41 +25,8 @@ func Querygatewaylist(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询网关列表,获取请求参数时 error"})
 		return
 	}
-
 	log.Println("req.GatewayNumber:", req.GatewayNumber, "req.ParkName:", req.ParkName, "req.Status:", req.Status, "req.Version:", req.Version, "req.UpdateBeginTime:", req.UpdateBeginTime, "req.UpdateEndTime:", req.UpdateEndTime)
-	//校验网关请求参数
-	//GatewayNumber    //设备编号 网关编号 默认 "0":全部
-	if req.GatewayNumber == "" {
-		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询网关列表,获取请求参数时,设备编号参数不能为空"})
-		return
-	}
-	//ParkName           //停车场名称 默认 "0":全部
-	if req.ParkName == "" {
-		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询网关列表,获取请求参数时,停车场名称参数不能为空"})
-		return
-	}
-	//Status                //状态：2全部，1在线、0离线
-	if req.Status > 2 {
-		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询网关列表,获取请求参数时,设备状态参数不正确"})
-		return
-	}
-	//Version                //软件版本 "0":全部
-	if req.Version == "" {
-		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询网关列表,获取请求参数时,软件版本不能为空"})
-		return
-	}
-	//UpdateBeginTime          //起始时间  "0":全部
-	if req.UpdateBeginTime == "" {
-		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询网关列表,获取请求参数时,起始时间不能为空"})
-		return
-	}
-	//UpdateEndTime            //结束时间  "0":全部
-	if req.UpdateEndTime == "" {
-		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询网关列表,获取请求参数时,结束时间不能为空"})
-		return
-	}
 
-	//查询网关列表
 	qerr, wgxxs := db.QueryGatewayALLdata(&req)
 	if qerr != nil {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询网关列表时 error"})
@@ -113,6 +80,11 @@ func QueryAlarmlist(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询告警列表,获取请求参数时 error"})
 		return
 	}
+	//
+	if req.TerminalId != "" {
+		//1、查询设备编号
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询告警列表,获取请求参数时 设备id 不能为空"})
+	}
 
 	//1.获取告警列表数据
 	qerr, gjs := db.QueryErrorALLdata(&req)
@@ -143,6 +115,10 @@ func QueryRestartRecordlist(c *gin.Context) {
 		log.Println("查询重启列表,获取请求参数时 err: %v", err)
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询重启记录列表,获取请求参数时 error"})
 		return
+	}
+	if req.TerminalId != "" {
+		//1、查询设备编号
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询重启记录列表,获取请求参数时 设备id 不能为空"})
 	}
 
 	//1.获取重启记录列表数据
@@ -219,7 +195,7 @@ func QueryGatewayDeviceDetails(c *gin.Context) {
 
 	qerr, txs := db.QueryRSUALLdata(req.TerminalId)
 	if qerr != nil {
-		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询重启记录列表时 error"})
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询天线记录列表时 error"})
 	}
 	data.Restarts = len(*txs)
 
@@ -227,8 +203,8 @@ func QueryGatewayDeviceDetails(c *gin.Context) {
 	if qrerr != nil {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询重启记录列表时 error"})
 	}
-	data.WorkTime = utils.SecondsToTime(cq.FNbChongqlxgzsc)
-	data.RestartTime = cq.FDtChongqsj.Format("2006-01-02 15:04:05")
+	data.WorkTime = utils.SecondsToTime(cq.FNbChongqlxgzsc)         //工作时长
+	data.RestartTime = cq.FDtChongqsj.Format("2006-01-02 15:04:05") //重启时间
 
 	//2、返回数据
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: data, Message: "查询网关设备详情成功"})
@@ -293,7 +269,7 @@ func Addgatewaydevice(c *gin.Context) {
 		return
 	}
 	//4、返回数据
-	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: types.StatusText(types.StatusSuccessfully), Message: "添加设备成功"})
+	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: types.StatusText(types.StatusADDSuccessfully), Message: "添加设备成功"})
 }
 
 //增加版本——软件更新版本
@@ -324,10 +300,6 @@ func AddNewVersion(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "添加软件更新版本，上传文件名不能为空"})
 		return
 	}
-	//if req.Time == "" {
-	//	c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "添加软件更新版本，上传时间不能为空"})
-	//	return
-	//}
 
 	qverr, data := db.QueryOneVersiondata(req.Version)
 	if qverr != nil {
@@ -377,8 +349,15 @@ func UploadVersionFile(c *gin.Context) {
 
 //查询软件版本列表
 func QuerygatewayVersionlist(c *gin.Context) {
+	req := dto.QueryVersionQeq{}
+	//1、获取请求数据
+	if err := c.Bind(&req); err != nil {
+		log.Println("查询软件版本列表，获取请求参数时 err: %v", err)
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询软件版本列表，获取请求参数时 error"})
+		return
+	}
 	//1.查询软件版本列表数据
-	qerr, vs := db.QueryVersionALLdata()
+	qerr, vs := db.QueryVersionALLdata(&req)
 	if qerr != nil {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询软件版本列表失败"})
 		return
@@ -386,15 +365,15 @@ func QuerygatewayVersionlist(c *gin.Context) {
 	datas := make([]dto.QueryVersionListResp, 0)
 	for _, v := range *vs {
 		resq := new(dto.QueryVersionListResp)
-		resq.Version = v.FVcRuanjbbh
-		resq.VersionNote = v.FVcBanbgxnr
-		resq.Time = v.FDtShangcsj.Format("2006-01-02 15:04:05")
-		err, num := db.QueryVersionNumdata(v.FVcRuanjbbh)
+		resq.Version = v.FVcRuanjbbh                            //版本号
+		resq.VersionNote = v.FVcBanbgxnr                        //版本描述
+		resq.Time = v.FDtShangcsj.Format("2006-01-02 15:04:05") //版本上传时间
+		err, num := db.QueryVersionNumdata(v.FVcRuanjbbh)       //版本使用设备数
 		if err != nil {
 			c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询软件版本使用次数失败"})
 			return
 		}
-		resq.Num = num
+		resq.Num = num //版本使用设备数
 		datas = append(datas, *resq)
 
 	}
@@ -423,4 +402,50 @@ func DeleteNewVersion(c *gin.Context) {
 	}
 	//2、返回数据
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: types.StatusText(types.StatusSuccessfully), Message: "删除软件版本成功"})
+}
+
+//QueryVersionlist
+//软件版本下拉框
+func QueryVersionlist(c *gin.Context) {
+	qerr, datas := db.QueryVersionALL()
+	if qerr != nil {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询软件版本列表失败"})
+		return
+	}
+	var resp dto.QueryVersionsResp
+	for _, data := range *datas {
+		resp.Version = append((resp.Version), data.FVcRuanjbbh)
+	}
+	//2、返回数据
+	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: resp, Message: "获取软件版本下拉框成功"})
+}
+
+//QueryGatewaylist 网关设备下拉框
+func QueryGatewaylist(c *gin.Context) {
+	qerr, datas := db.QueryGatewayALL()
+	if qerr != nil {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询设备列表失败"})
+		return
+	}
+	var resp dto.QueryGatewaysResp
+	for _, data := range *datas {
+		resp.TerminalId = append((resp.TerminalId), data.FVcWanggbh)
+	}
+	//2、返回数据
+	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: resp, Message: "获取设备下拉框成功"})
+}
+
+//QueryparkNamelist停车场下拉框
+func QueryparkNamelist(c *gin.Context) {
+	qerr, datas := db.QueryParkNameALL()
+	if qerr != nil {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询停车场列表失败"})
+		return
+	}
+	var resp dto.QueryParkNamesResp
+	for _, data := range *datas {
+		resp.ParkNames = append((resp.ParkNames), data.FVcMingc)
+	}
+	//2、返回数据
+	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: resp, Message: "获取停车场下拉框成功"})
 }
