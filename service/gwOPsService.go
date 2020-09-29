@@ -11,7 +11,7 @@ func FileUpload(file []byte, fname string) {
 	//文件在服务器上的位置
 	fpath := DirPath
 	//"/root/test/info.json"
-	utils.UploadFile(file, fpath+fname)
+	utils.UploadFile(file, fpath+fname, fname)
 }
 
 //

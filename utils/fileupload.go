@@ -136,7 +136,7 @@ func (cliConf *ClientConfig) Download(srcPath, dstPath string) {
 }
 
 //上传字节流
-func UploadFile(filebyte []byte, filePath string) {
+func UploadFile(filebyte []byte, filePath string, fname string) {
 	cliConf := new(ClientConfig)
 	//目标服务器
 	cliConf.createClient(Host, Port, Username, Passwd)
@@ -145,4 +145,8 @@ func UploadFile(filebyte []byte, filePath string) {
 	//cliConf.Upload("./info.json", "/root/test/info.json")
 	//从服务器中下载文件
 	//cliConf.Download("/root/test/info.json", "./info.json")
+
+	//上传完成 删除文件"./version/"
+	//	DelFile("./version/"+ fname )
+
 }

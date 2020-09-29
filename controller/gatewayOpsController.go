@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"operationPlatform/db"
@@ -10,6 +11,8 @@ import (
 	"operationPlatform/service"
 	"operationPlatform/types"
 	"operationPlatform/utils"
+	"os"
+	"path"
 	"time"
 )
 
@@ -350,21 +353,35 @@ func AddNewVersion(c *gin.Context) {
 //
 //上传版本文件
 func UploadVersionFile(c *gin.Context) {
-	req := dto.AddGatewayVersionFileQeq{}
-	//1、获取请求数据
-	if err := c.Bind(&req); err != nil {
-		log.Println("添加软件更新版本 获取请求参数时 err: %v", err)
-		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "添加软件更新版本，获取请求参数时 error"})
+	//接收文件
+	file, _ := c.FormFile("file")
+	log.Println("FileName:", file.Filename, "file.Header", file.Header)
+	dst := path.Join("./version/", file.Filename)
+	//保存文件
+	if err := c.SaveUploadedFile(file, dst); err != nil {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "添加软件更新版本，保存文件失败"})
 		return
 	}
-	//2、校验参数
-	if req.FileName == "" {
-		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "添加软件更新版本，上传文件名不能为空"})
+
+	log.Println("要发送上传文件的path:=", dst)
+	//读取文件
+	f, oserr := os.Open("./version/" + dst)
+	if oserr != nil {
+		log.Println("os.Open error:", oserr)
 		return
 	}
+	data, rerr := ioutil.ReadAll(f)
+	if rerr != nil {
+		return
+	}
+
+	defer func() {
+		_ = f.Close()
+	}()
+
 	//3、把文件上传到OSS对象服务器上
-	log.Println("req.FileName:", req.FileName)
-	service.FileUpload(req.File, req.FileName)
+	//log.Println("req.FileName:", req.FileName)
+	service.FileUpload(data, file.Filename)
 
 	//2、返回数据
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: types.StatusText(types.StatusSuccessfully), Message: "添加软件更新版本，上传成功"})
@@ -437,7 +454,10 @@ func QueryVersionlist(c *gin.Context) {
 	}
 	var resp dto.QueryVersionsResp
 	for _, data := range *datas {
-		resp.Version = append((resp.Version), data.FVcRuanjbbh)
+		var v dto.VersionMsg
+		v.Version = data.FVcRuanjbbh
+		v.VersionNote = data.FVcBanbgxnr
+		resp.Versions = append((resp.Versions), v)
 	}
 	//2、返回数据
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: resp, Message: "获取软件版本下拉框成功"})
@@ -474,4 +494,42 @@ func QueryparkNamelist(c *gin.Context) {
 	}
 	//2、返回数据
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: resp, Message: "获取停车场下拉框成功"})
+}
+
+//VersionUpdate
+func VersionUpdate(c *gin.Context) {
+	req := dto.VersionUpdateQeq{}
+	//1、获取请求数据
+	if err := c.Bind(&req); err != nil {
+		log.Println("添加软件更新版本 获取请求参数时 err: %v", err)
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "添加软件更新版本，获取请求参数时 error"})
+		return
+	}
+	//2、校验参数
+	if len(req.Gwids) == 0 {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "请选择要更新的设备网关"})
+		return
+	}
+	if req.Version == "" {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "请选择要更新的软件版本"})
+		return
+	}
+
+	if req.UpdateStatus == 0 && req.UpdateTime == "" {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "请选择要立即更新的时间"})
+		return
+	}
+
+	if req.UpdateStatus == 1 && req.UpdateTime == "" {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "请选择要定时更新的时间"})
+		return
+	}
+
+	derr := db.VersionsUpdatedata(&req)
+	if derr != nil {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusDeleteDataError, Data: types.StatusText(types.StatusDeleteDataError), Message: "更新软件版本时错误"})
+		return
+	}
+	//2、返回数据
+	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: types.StatusText(types.StatusSuccessfully), Message: "更新软件版本成功"})
 }

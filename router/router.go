@@ -72,6 +72,9 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	//12、上传版本文件
 	route.POST("/version/fileupload", controller.UploadVersionFile)
 
+	//13、网关软件更新执行
+	route.POST("/version/update", controller.VersionUpdate)
+
 	//下拉框
 	//软件版本下拉框
 	route.GET("/version/queryversionlist", controller.QueryVersionlist)

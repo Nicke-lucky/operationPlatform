@@ -305,7 +305,12 @@ type QueryVersionListResp struct {
 }
 
 type QueryVersionsResp struct {
-	Version []string `json:"version"` // 软件版本号
+	Versions []VersionMsg `json:"versions"` // 软件版本号
+}
+
+type VersionMsg struct {
+	Version     string `json:"version"`      // 软件版本号
+	VersionNote string `json:"version_note"` // 软件版本号
 }
 
 type QueryGatewaysResp struct {

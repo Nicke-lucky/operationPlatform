@@ -312,6 +312,33 @@ func DeleteVersionsdata(req *dto.DeleteVersionQeq) error {
 	return nil
 }
 
+func VersionsUpdatedata(req *dto.VersionUpdateQeq) error {
+	//db := utils.GormClient.Client
+	//要更新的设备软件版本
+	//for _, v := range req.Gwids {
+	//	//1、查询这个设备，这个软件版本是否记录
+	//
+	//	//2、如果已经存在，说明要去查看版本更新是否执行到位
+	//
+	//	//3、如果不存在，说明要插入该条记录
+	//
+	//	version := new(types.BDmRuanjbb)
+	//	version.FNbZhuangt = 1 //1表示删除
+	//	if err := db.Table("b_dm_ruanjbb").Where("F_VC_RUANJBBH = ?", v).Update(version).Error; err != nil {
+	//		if fmt.Sprint(err) == "record not found" {
+	//			log.Println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++err== `record not found`:", err)
+	//			continue
+	//		} else {
+	//			log.Println("删除 软件版本表 数据时 error :", err)
+	//			return err
+	//		}
+	//	}
+	//	log.Println("删除软件版本表 数据，成功")
+	//}
+	//log.Println("批量删除软件版本表数据，成功", len(req.Version))
+	return nil
+}
+
 //查询软件版本列表下拉框
 func QueryVersionALL() (error, *[]types.BDmRuanjbb) {
 	db := utils.GormClient.Client

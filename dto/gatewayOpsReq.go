@@ -73,7 +73,7 @@ type AddGatewayVersionQeq struct {
 //增减软件版本信息的请求信息
 type AddGatewayVersionFileQeq struct {
 	FileName string `json:"file_name"`
-	File     []byte `json:"file"`
+	//File     []byte `json:"file"`
 }
 
 type QueryVersionQeq struct {
@@ -84,7 +84,18 @@ type QueryVersionQeq struct {
 
 //deleteVersion
 type DeleteVersionQeq struct {
-	Version []string `json:"version"` // 软件版本
+	Version []string `json:"version"`
+}
+
+type VersionUpdateQeq struct {
+	Gwids        []Gwmsg `json:"gwids"` //
+	Version      string  `json:"version"`
+	UpdateStatus int     `json:"update_status"`
+	UpdateTime   string  `json:"update_time"`
+}
+
+type Gwmsg struct {
+	Gwid string `json:"gwid"` // 软件版本
 }
 
 /*
