@@ -313,30 +313,53 @@ func DeleteVersionsdata(req *dto.DeleteVersionQeq) error {
 }
 
 func VersionsUpdatedata(req *dto.VersionUpdateQeq) error {
-	//db := utils.GormClient.Client
+	db := utils.GormClient.Client
 	//要更新的设备软件版本
-	//for _, v := range req.Gwids {
-	//	//1、查询这个设备，这个软件版本是否记录
-	//
-	//	//2、如果已经存在，说明要去查看版本更新是否执行到位
-	//
-	//	//3、如果不存在，说明要插入该条记录
-	//
-	//	version := new(types.BDmRuanjbb)
-	//	version.FNbZhuangt = 1 //1表示删除
-	//	if err := db.Table("b_dm_ruanjbb").Where("F_VC_RUANJBBH = ?", v).Update(version).Error; err != nil {
-	//		if fmt.Sprint(err) == "record not found" {
-	//			log.Println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++err== `record not found`:", err)
-	//			continue
-	//		} else {
-	//			log.Println("删除 软件版本表 数据时 error :", err)
-	//			return err
-	//		}
-	//	}
-	//	log.Println("删除软件版本表 数据，成功")
-	//}
-	//log.Println("批量删除软件版本表数据，成功", len(req.Version))
+	for _, v := range req.Gwids {
+		//1、查询这个设备，这个软件版本是否记录
+		qverr, gxjl := QueryVersionISUpdate(v.Gwid, req.Version)
+		if qverr != nil {
+			if fmt.Sprint(qverr) == "record not found" {
+				log.Println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++err== `record not found`:", qverr)
+				//不存在，就要插入呀
+				version := new(types.BDmRuanjgxzx)
+				version.FVcWanggbh = v.Gwid                              //网关编号
+				version.FVcRuanjbbh = req.Version                        //软件版本
+				version.FNbJihgxcl = req.UpdateStatus                    //计划更新策略
+				version.FDtJihgxsj = utils.StrTimeTotime(req.UpdateTime) //计划更新时间
+				if err := db.Table("b_dm_ruanjgxzx").Create(version).Error; err != nil {
+					log.Println("插入 软件版本更新表 数据时 error :", err)
+					continue
+				}
+				log.Println("软件版本更新表数据更新插入成功")
+
+			} else {
+				log.Println("+++++++++++++++++++++++++++++++++++++[查询软件版本更新表数据失败]+++++++++++++++++++++err==:", qverr)
+				continue
+			}
+		}
+
+		//2、如果已经存在，说明要去查看版本更新是否执行到位
+		if gxjl.FNbZhuangt == 0 {
+			log.Println("++++++++++++++++[查询成功,要去查看版本更新是否执行到位,现在还没有更新完成]+++++++++++++++++++++gxjl.FNbZhuangt==0 ", gxjl.FNbZhuangt)
+			continue
+		}
+	}
+	log.Println("软件版本更新表数据更新完成++++++++")
 	return nil
+}
+
+//查询该网关、该版本是否已经更新
+func QueryVersionISUpdate(gwid, versionid string) (error, *types.BDmRuanjgxzx) {
+	db := utils.GormClient.Client
+	v := new(types.BDmRuanjgxzx)
+	//查询是否存在如果已经存在，说明已经在更新中或者已经更新成功
+	if err := db.Table("b_dm_ruanjgxzx").Where("F_VC_WANGGBH=?", gwid).Where("F_NB_BANBENID=?", versionid).Last(&v).Error; err != nil {
+		log.Println("查询 软件更新执行 error :", err)
+		return err, nil
+	}
+	log.Println("查询软件更新执行表 数据，成功！数据结果:", v.FVcWanggbh, v.FVcRuanjbbh, "v.FNbZhuangt(1:ok  0:ing):", v.FNbZhuangt)
+	return nil, v
 }
 
 //查询软件版本列表下拉框
