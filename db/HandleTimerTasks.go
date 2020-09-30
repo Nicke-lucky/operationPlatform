@@ -106,6 +106,7 @@ func GatewayDataUpdate() error {
 		log.Println("获取网关基本信息失败", err)
 		return err
 	}
+
 	//网关基本信息更新
 	for _, gwmsg := range (*gwmsgs).Date {
 		gwxx := new(types.BDmWanggjcxx)
@@ -160,7 +161,6 @@ func GatewayDataUpdate() error {
 			gwxx.FNbZhuangt = 0 //	'状态 0：离线、1：在线',[通过最新存储时间判断]
 		} else {
 			gwxx.FNbZhuangt = 1 //	 '状态 0：离线、1：在线',[通过最新存储时间判断]
-
 		}
 
 		if !utils.StringExist(gwmsg.Gatewayip, ",") {
@@ -169,12 +169,6 @@ func GatewayDataUpdate() error {
 			gwip := strings.Split(gwmsg.Gatewayip, ",")
 			gwxx.FVcIpdz = gwip[0] //'IP地址',
 		}
-
-		//gwxx.FNbYsyncdx = //	`F_NB_YISYNCDX` decimal(32, 10) DEFAULT NULL COMMENT '已使用内存大小 单位：MB',
-		//gwxx.FNbZongncdx = //	`F_NB_ZONGNCDX` decimal(32, 10) DEFAULT NULL COMMENT '总内存大小 单位：MB',
-		//gwxx.FNbYingpsyl = //	`F_NB_YINGPSYL` decimal(32, 10) DEFAULT NULL COMMENT '硬盘使用率 百分比',
-		//gwxx.FNbYisyypdx = //	`F_NB_YISYYPDX` decimal(32, 10) DEFAULT NULL COMMENT '已使用硬盘大小 单位：GB',
-		//gwxx.FNbZongypdx = //	`F_NB_ZONGYPDX` decimal(32, 10) DEFAULT NULL COMMENT '总硬盘大小 单位：GB',
 
 		//告警总数是从告警列表中获取的
 		errornum, qEerrorerr := QueryErrordata(gwmsg.MsgHead.TerminalId)
@@ -215,9 +209,10 @@ func GatewayDataUpdate() error {
 		}
 	}
 
-	//2、获取网关使用信息
-	//2.1告警信息
-	//ErrorDataPostWithJson()
+	//2、获取网关所有列表，用于判断有的网关是否挂了
+
+	//3、处理已经离线的网关设备
+
 	return nil
 
 }
@@ -269,7 +264,6 @@ func GatewayMetricDataUpdate() error {
 		} else {
 			log.Println("查询CPU指标cpudata为空:", cpudata)
 		}
-
 	}
 
 	//2、内存使用率
@@ -546,7 +540,7 @@ func GatewayAlarmDataUpdate() error {
 	//查询的起始时间，查询的结束时间
 	var beginTime, endTime int64
 
-	//
+	//把所有的告警信息记录在数据库
 
 	//调告警数据获取接口
 	ErrorDataPostWithJson(beginTime, endTime)

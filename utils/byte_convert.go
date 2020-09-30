@@ -28,6 +28,8 @@ func ByteToGB(bytes float64) float64 {
 	d := decimal.New(1, 0) // exp->    0:原样 2：除100
 	result := decimal.NewFromFloat(b).DivRound(d, 2).StringFixed(2)
 	log.Println("输入值为：", b, "精度为二的结果为：", result, "GB")
+
+	//string转成float64
 	value, _ := strconv.ParseFloat(result, 64)
 	return value
 }
