@@ -33,7 +33,7 @@ func QueryGatewaydata(FVcWanggbh string) (error, *types.BDmWanggjcxx) {
 		log.Println("查询 网关基础信息表最新数据时 QueryTabledata error :", err)
 		return err, nil
 	}
-	log.Println("查询网关基础信息表 数据，成功！数据结果:", gwxx)
+	log.Println("查询网关基础信息表 数据，成功！数据结果:", gwxx.FVcWanggbh)
 	return nil, gwxx
 }
 
@@ -119,12 +119,14 @@ func QueryErrordata(gwid string) (int64, error) {
 	//全部设备
 	var Count int64
 	if err := db.Table("b_dm_gaoj").Where("F_VC_WANGGBH = ?", gwid).Count(&Count).Error; err != nil {
-		log.Println("查询 重启信息表ALL数据时 error :", err)
+		log.Println("查询告警表 数据，ALL数据时 error :", err)
 		return 0, err
 	}
+	log.Println("++++++++++++++++++查询告警表 数据ok,count:", Count)
 	return Count, nil
 }
 
+//未处理告警
 func QueryUndisposedError(gwid string) (int64, error) {
 	db := utils.GormClient.Client
 	//全部设备
@@ -133,6 +135,7 @@ func QueryUndisposedError(gwid string) (int64, error) {
 		log.Println("查询 重启信息表ALL数据时 error :", err)
 		return 0, err
 	}
+	log.Println("+++++++++++++++++查询未处理告警表 数据ok,count:", Count)
 	return Count, nil
 }
 
@@ -174,17 +177,16 @@ func QueryRestartOnedata(TerminalId string) (error, *types.BDmChongq) {
 	return nil, cq
 }
 
-func QueryRestartCount(TerminalId string) (error, *types.BDmChongq) {
+func QueryRestartCount(TerminalId string) (error, int64) {
 	db := utils.GormClient.Client
-	cq := new(types.BDmChongq)
 	log.Println("req.TerminalId:", TerminalId)
 	var Count int64
 	if err := db.Table("b_dm_chongq").Where("F_VC_WANGGBH =?", TerminalId).Count(&Count).Error; err != nil {
 		log.Println("查询 重启信息表One数据时 error :", err)
-		return err, nil
+		return err, 0
 	}
-	log.Println("查询重启信息表 数据，成功！数据结果:", cq.FNbChongqlxgzsc)
-	return nil, cq
+	log.Println("查询重启信息表 数据，成功！Count:", Count)
+	return nil, Count
 }
 
 //查询天线信息
@@ -320,13 +322,14 @@ func VersionsUpdatedata(req *dto.VersionUpdateQeq) error {
 		qverr, gxjl := QueryVersionISUpdate(v.Gwid, req.Version)
 		if qverr != nil {
 			if fmt.Sprint(qverr) == "record not found" {
-				log.Println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++err== `record not found`:", qverr)
+				log.Println("+++++++++++++++++++++++++++++err== `record not found`:", qverr)
 				//不存在，就要插入呀
 				version := new(types.BDmRuanjgxzx)
 				version.FVcWanggbh = v.Gwid                              //网关编号
 				version.FVcRuanjbbh = req.Version                        //软件版本
 				version.FNbJihgxcl = req.UpdateStatus                    //计划更新策略
 				version.FDtJihgxsj = utils.StrTimeTotime(req.UpdateTime) //计划更新时间
+				version.FDtGengxwcsj = utils.StrTimeTotime("2020-01-01 00:00:00")
 				if err := db.Table("b_dm_ruanjgxzx").Create(version).Error; err != nil {
 					log.Println("插入 软件版本更新表 数据时 error :", err)
 					continue
@@ -340,7 +343,7 @@ func VersionsUpdatedata(req *dto.VersionUpdateQeq) error {
 		}
 
 		//2、如果已经存在，说明要去查看版本更新是否执行到位
-		if gxjl.FNbZhuangt == 0 {
+		if gxjl != nil && gxjl.FNbZhuangt == 0 {
 			log.Println("++++++++++++++++[查询成功,要去查看版本更新是否执行到位,现在还没有更新完成]+++++++++++++++++++++gxjl.FNbZhuangt==0 ", gxjl.FNbZhuangt)
 			continue
 		}

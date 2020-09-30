@@ -40,7 +40,7 @@ type GatewayDeviceMsgResp struct {
 type GatewayDeviceMsg struct {
 	MsgHead                   GatewayDeviceMsgHead `json:"msghead"`
 	UpdateTime                string               `json:"updatetime"`                 //采集时间
-	NetWorkDelay              int64                `json:"networkdelay"`               //网络延迟 ms
+	NetWorkDelay              string               `json:"networkdelay"`               //网络延迟 ms
 	ProgrameRuntime           string               `json:"programe_runtime"`           //   网关运行时间，秒
 	Deviceid                  string               `json:"deviceid"`                   //   设备ID
 	Gatewayip                 string               `json:"gatewayip"`                  //   网关IP地址，多个地址则用”, ”分隔
@@ -169,20 +169,20 @@ type ErrorMsg struct {
 //查询最近metric指标值接口响应
 //指标信息接口响应
 type MetricMsgResp struct {
-	Code int       `json:"code"`
-	Msg  string    `json:"msg"`
-	Date MetricMsg `json:"data"`
+	Code          int       `json:"code"`
+	Msg           string    `json:"msg"`
+	MetricMsgDate MetricMsg `json:"data"` //指标数据
 }
 
 type MetricMsg struct {
 	Metric string   `json:"metric"`
-	Date   []Metric `json:"data"`
+	Date   []Metric `json:"data"` //多个设备的指标
 }
 
 type Metric struct {
-	Time     string  `json:"time"`     //"time": "2020-09-22 14:31:30",
-	Endpoint string  `json:"endpoint"` //"endpoint": "0A4924F0F82DDF19",
-	Value    float64 `json:"value"`    //"value": 3.8
+	Time     string  `json:"time"`     //"time": "2020-09-22 14:31:30",//采集时间
+	Endpoint string  `json:"endpoint"` //"endpoint": "0A4924F0F82DDF19",设备id
+	Value    float64 `json:"value"`    //"value": 3.8 指标值
 }
 
 //var MetricMsgMapList map[string]MetricMsgmap

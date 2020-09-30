@@ -13,6 +13,7 @@ import (
 	"operationPlatform/utils"
 	"os"
 	"path"
+	"strconv"
 	"time"
 )
 
@@ -23,7 +24,7 @@ func Querygatewaylist(c *gin.Context) {
 	req := dto.QueryGatewayListQeqdata{}
 	//获取请求数据
 	if err := c.Bind(&req); err != nil {
-		log.Println("查询网关列表,获取请求参数时 err: %v", err)
+		log.Println("查询网关列表,获取请求参数时 err:", err)
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询网关列表,获取请求参数时 error"})
 		return
 	}
@@ -58,19 +59,34 @@ func Querygatewaylist(c *gin.Context) {
 		//data.CompanyName = gwxx             // 公司ID
 		data.OnlineStatus = gwxx.FNbZhuangt //"	"status": "1"： 在线状态 0 :离线
 		data.Gatewayip = gwxx.FVcIpdz       //   网关IP地址，多个地址则用”, ”分隔
+		//CPU使用率
 		data.CPU = gwxx.FNbCPUsyl
-		data.MEMpercent = gwxx.FNbNeicsyl
-		data.MEM = gwxx.FNbYsyncdx
-		data.DISKpercent = gwxx.FNbYingpsyl
-		data.DISK = gwxx.FNbYisyypdx
+		MEMpercent, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", gwxx.FNbNeicsyl), 64)
+		//内存使用率
+		data.MEMpercent = MEMpercent
+		Ysyncdx, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", gwxx.FNbYsyncdx), 64)
+		//内存使用大小
+		data.MEM = Ysyncdx
+		//磁盘使用率
+		Yingpsyl, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", gwxx.FNbYingpsyl), 64)
+		data.DISKpercent = Yingpsyl
+		//磁盘使用大小
+		Yisyypdx, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", gwxx.FNbYisyypdx), 64)
+		data.DISK = Yisyypdx
+		//未处理告警数量
 		data.UnprocessedErrors = gwxx.FNbWeiclgjs
+		//告警总数
 		data.Errors = gwxx.FNbGaojzs
+		//重启次数
 		data.Restarts = gwxx.FNbChongqcs
-		data.GetwayVersion = gwxx.FVcDangqbbh //   场内网关当前版本号
-
-		data.LastversionUpdatedatetime = gwxx.FDtZuijgxbbsj.Format("2006-01-02 15:04:05") //   场内网关最后更新成功时间
+		//   场内网关当前版本号
+		data.GetwayVersion = gwxx.FVcDangqbbh
+		//   场内网关最后更新成功时间
+		data.LastversionUpdatedatetime = gwxx.FDtZuijgxbbsj.Format("2006-01-02 15:04:05")
+		//天线数量
 		data.RsuNum = gwxx.FNbTianxsl
-		data.Network = gwxx.FNbWanglyc
+		//延迟
+		data.Network = int64(gwxx.FNbWanglyc)
 		data.Flag = false
 		datas = append(datas, *data)
 	}
@@ -93,7 +109,7 @@ func QueryAlarmlist(c *gin.Context) {
 	req := dto.QueryErrorMsgListQeq{}
 	//获取请求数据
 	if err := c.Bind(&req); err != nil {
-		log.Println("查询告警列表,获取请求参数时 err: %v", err)
+		log.Println("查询告警列表,获取请求参数时 err:", err)
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询告警列表,获取请求参数时 error"})
 		return
 	}
@@ -131,7 +147,7 @@ func QueryRestartRecordlist(c *gin.Context) {
 	req := dto.QueryRestartMsgListQeq{}
 	//获取请求数据
 	if err := c.Bind(&req); err != nil {
-		log.Println("查询重启列表,获取请求参数时 err: %v", err)
+		log.Println("查询重启列表,获取请求参数时 err:", err)
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询重启记录列表,获取请求参数时 error"})
 		return
 	}
@@ -166,7 +182,7 @@ func QueryRSURecordlist(c *gin.Context) {
 	req := dto.QueryRSUMsgListQeq{}
 	//获取请求数据
 	if err := c.Bind(&req); err != nil {
-		log.Println("查询天线列表,获取请求参数时 err: %v", err)
+		log.Println("查询天线列表,获取请求参数时 err:", err)
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询天线记录列表,获取请求参数时 error"})
 		return
 	}
@@ -194,7 +210,7 @@ func QueryGatewayDeviceDetails(c *gin.Context) {
 	req := dto.QueryGatewayOneQeqdata{}
 	//获取请求数据
 	if err := c.Bind(&req); err != nil {
-		log.Println("查询网关列表,获取请求参数时 err: %v", err)
+		log.Println("查询网关列表,获取请求参数时 err:", err)
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询网关列表,获取请求参数时 error"})
 		return
 	}
@@ -215,7 +231,7 @@ func QueryGatewayDeviceDetails(c *gin.Context) {
 	data.MEM = wgxx.FNbZongncdx
 	data.DISKpercent = wgxx.FNbYingpsyl
 	data.DISK = wgxx.FNbZongypdx
-	data.Network = wgxx.FNbWanglyc
+	data.Network = int64(wgxx.FNbWanglyc)
 
 	qerr, txs := db.QueryRSUALLdata(req.TerminalId)
 	if qerr != nil {
@@ -240,7 +256,7 @@ func Addgatewaydevice(c *gin.Context) {
 	req := dto.GatewayDevicedata{}
 	//1、获取请求数据
 	if err := c.Bind(&req); err != nil {
-		log.Println("添加设备 获取请求参数时 err: %v", err)
+		log.Println("添加设备 获取请求参数时 err:", err)
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "添加设备，获取请求参数时 error"})
 		return
 	}
@@ -303,7 +319,7 @@ func AddNewVersion(c *gin.Context) {
 	req := dto.AddGatewayVersionQeq{}
 	//1、获取请求数据
 	if err := c.Bind(&req); err != nil {
-		log.Println("添加软件更新版本 获取请求参数时 err: %v", err)
+		log.Println("添加软件更新版本 获取请求参数时 err:", err)
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "添加软件更新版本，获取请求参数时 error"})
 		return
 	}
@@ -392,7 +408,7 @@ func QuerygatewayVersionlist(c *gin.Context) {
 	req := dto.QueryVersionQeq{}
 	//1、获取请求数据
 	if err := c.Bind(&req); err != nil {
-		log.Println("查询软件版本列表，获取请求参数时 err: %v", err)
+		log.Println("查询软件版本列表，获取请求参数时 err:", err)
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询软件版本列表，获取请求参数时 error"})
 		return
 	}
@@ -426,7 +442,7 @@ func DeleteNewVersion(c *gin.Context) {
 	req := dto.DeleteVersionQeq{}
 	//1、获取请求数据
 	if err := c.Bind(&req); err != nil {
-		log.Println("添加软件更新版本 获取请求参数时 err: %v", err)
+		log.Println("添加软件更新版本 获取请求参数时 err:", err)
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "添加软件更新版本，获取请求参数时 error"})
 		return
 	}
@@ -501,7 +517,7 @@ func VersionUpdate(c *gin.Context) {
 	req := dto.VersionUpdateQeq{}
 	//1、获取请求数据
 	if err := c.Bind(&req); err != nil {
-		log.Println("添加软件更新版本 获取请求参数时 err: %v", err)
+		log.Println("添加软件更新版本 获取请求参数时 err:", err)
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "添加软件更新版本，获取请求参数时 error"})
 		return
 	}

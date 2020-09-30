@@ -147,7 +147,7 @@ type BDmWanggjcxx struct {
 	FVcDangqbbh   string    `gorm:"column:F_VC_DANGQBBH"`   //	`F_VC_DANGQBBH` varchar(512) DEFAULT NULL COMMENT '当前版本号',
 	FDtZuijgxbbsj time.Time `gorm:"column:F_DT_ZUIJGXBBSJ"` //	`F_DT_ZUIJGXBBSJ` datetime DEFAULT NULL COMMENT '最近更新版本时间',
 	FNbTianxsl    int       `gorm:"column:F_NB_TIANXSL"`    //	`F_NB_TIANXSL` int(11) DEFAULT NULL COMMENT '天线数量',
-	FNbWanglyc    int64     `gorm:"column:F_NB_WANGLYC"`    //	`F_NB_WANGLYC` bigint(20) DEFAULT NULL COMMENT '网络延迟 单位：ms',
+	FNbWanglyc    int       `gorm:"column:F_NB_WANGLYC"`    //	`F_NB_WANGLYC` bigint(20) DEFAULT NULL COMMENT '网络延迟 单位：ms',
 	FDtChuangjsj  time.Time `gorm:"column:F_DT_CHUANGJSJ"`  //	`F_DT_CHUANGJSJ` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 	FDtZuihgxsj   time.Time `gorm:"column:F_DT_ZUIHGXSJ"`   //	`F_DT_ZUIHGXSJ` datetime DEFAULT NULL COMMENT '最后更新数据时间',
 	//	PRIMARY KEY (`F_VC_WANGGBH`),
