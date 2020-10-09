@@ -95,6 +95,8 @@ func HandleSecondTasks() {
 var Errormsg_address string
 var Gwmsg_address string
 var Metric_address string
+var AlarmBeginTime string
+var AlarmEndTime string
 
 //任务一
 //获取网关列表数据
@@ -539,11 +541,21 @@ func GatewayMetricDataUpdate() error {
 func GatewayAlarmDataUpdate() error {
 	//查询的起始时间，查询的结束时间
 	var beginTime, endTime int64
+	// 获取最新一次告警时间
+	qerr, gjxxs := QueryAlarm()
+	if qerr != nil {
+		log.Println("error:", qerr, gjxxs)
+	}
+	log.Println("gjxx:", gjxxs.FDtGaojsj)
 
-	//把所有的告警信息记录在数据库
+	//上一次告警时间的
+	beginTime = utils.GetSomeTimesstamp(gjxxs.FDtGaojsj)
+	endTime = utils.GetTimestamp()
 
 	//调告警数据获取接口
 	ErrorDataPostWithJson(beginTime, endTime)
+
+	//把所有的告警信息记录在数据库
 
 	return nil
 }

@@ -417,3 +417,15 @@ func QueryParkName(parkid string) (error, *types.BTccTingcc) {
 	log.Println("查询停车场列表 数据，成功！数据结果:", tcc.FVcTingccbh, tcc.FVcMingc)
 	return nil, tcc
 }
+
+//获取告警的最新告警时间
+func QueryAlarm() (error, *types.BDmGaoj) {
+	db := utils.GormClient.Client
+	gjs := make([]types.BDmGaoj, 0)
+	if err := db.Table("b_dm_gaoj").Order("F_DT_GAOJSJ desc").Limit(1).Find(&gjs).Error; err != nil {
+		log.Println("查询 获取告警的最新告警时间 error :", err)
+		return err, nil
+	}
+	log.Println("查询 告警信息表ALL数据")
+	return nil, &gjs[0]
+}

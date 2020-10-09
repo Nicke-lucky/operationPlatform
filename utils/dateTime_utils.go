@@ -126,6 +126,22 @@ func GetTimestamp() int64 {
 	return time.Now().Unix()
 }
 
+//获取当前时间戳
+func GetSomeTimesstamp(t time.Time) int64 {
+	return t.Unix()
+}
+
+//获取十分钟前的时间戳
+func GetSomeTimestamp() int64 {
+	now := time.Now()               //获取当前时间
+	t := now.Add(time.Minute * -10) // 获取上分钟时间
+	//10分钟前的时间戳，
+	//lastM := t.Unix() - int64(now.Second()) // 上-分钟时间-上-分钟秒数
+	//now.Unix()
+
+	return t.Unix()
+}
+
 //时间戳转时间字符串
 func TimestampToFormat(timeUnix int64) string {
 

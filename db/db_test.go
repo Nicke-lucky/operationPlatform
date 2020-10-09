@@ -88,3 +88,14 @@ func TestQueryRestartOnedata(t *testing.T) {
 	log.Println("gwxx:", qerr, gwxxs)
 
 }
+
+//QueryAlarm()
+func TestQueryAlarm(t *testing.T) {
+	Newdb()
+	qerr, gjxxs := QueryAlarm()
+	if qerr != nil {
+		log.Println("error:", qerr, gjxxs)
+	}
+	log.Println("gjxx:", gjxxs.FDtGaojsj)
+
+}

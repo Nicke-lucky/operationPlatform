@@ -61,3 +61,9 @@ func TestSecondsToTime(t *testing.T) {
 	logrus.Println(SecondsToTime(96469))  //"1天2小时47分49秒"
 	logrus.Println(SecondsToTime(964690)) //"11天3小时58分10秒"
 }
+
+//GetSomeTimestamp
+func TestGetSomeTimestamp(t *testing.T) {
+	logrus.Println(GetSomeTimestamp())
+	//1600759201
+}
