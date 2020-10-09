@@ -48,6 +48,19 @@ func UpdateGatewaydata(Wanggbh string, gwdata *types.BDmWanggjcxx) error {
 	return nil
 }
 
+//所有的网关，用于判断是否离线
+func QueryALlGatewaydata() (error, *[]types.BDmWanggjcxx) {
+	db := utils.GormClient.Client
+	gwxxs := make([]types.BDmWanggjcxx, 0)
+	//赋值
+	if err := db.Table("b_dm_wanggjcxx").Find(&gwxxs).Error; err != nil {
+		log.Println("查询 网关基础信息表所有数据时QueryALlGatewaydata error :", err)
+		return err, nil
+	}
+	log.Println("查询网关基础信息表 数据，成功！数据结果:")
+	return nil, &gwxxs
+}
+
 //4、查询网关信息多条数据【所有】
 func QueryGatewayALLdata(req *dto.QueryGatewayListQeqdata) (error, *[]types.BDmWanggjcxx) {
 	db := utils.GormClient.Client

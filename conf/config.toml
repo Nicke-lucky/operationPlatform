@@ -5,19 +5,20 @@
 ;mysql_user         = jstxb
 ;mysql_pass         = JStxb0408@
 ;mysql_databasename = payflow
+
 ; [mysql测试]
-;mysql_hostname     =122.51.24.189
-;mysql_port         = 3307
-;mysql_user         = root
-;mysql_pass         = Microvideo_1
-;mysql_databasename = payflow
+mysql_hostname     =122.51.24.189
+mysql_port         = 3307
+mysql_user         = root
+mysql_pass         = Microvideo_1
+mysql_databasename = payflow
 
 ; [mysql本地]
-mysql_hostname     =127.0.0.1
-mysql_port         = 3306
-mysql_user         = root
-mysql_pass         = shx19930509321
-mysql_databasename = payflow
+;mysql_hostname     =127.0.0.1
+;mysql_port         = 3306
+;mysql_user         = root
+;mysql_pass         = shx19930509321
+;mysql_databasename = payflow
 
 ;日志配置
 ;[logconf]
@@ -31,9 +32,13 @@ log_FileName     = "operationPlatform.log"
 ;redis_databasename  = 2
 ;redis_pass =
 
-;[redis开发]
-redis_addr          = "192.168.200.201:6379"
+;[redis测试]
+redis_addr         = "172.18.70.21:6379"
 redis_databasename  = 2
+
+;[redis开发]
+;redis_addr          = "192.168.200.201:6379"
+;redis_databasename  = 2
 
 
 ;[ip_address]结算监控6089 运维管理6077
@@ -57,7 +62,7 @@ gwmsg_address    = http://122.51.24.189:8080/etcpark/dataserver/gateway/list
 ;[FilePath]软件版本存放路径[oss]
 filepath        ="http://192.168.200.215:22/Users/nicker/sandbox/operationPlatform/file/"
 ;dirpath        ="/Users/nicker/sandbox/operationPlatform/file/"这里要加文件名的
-dirpath        ="/home/operationPlatform/file"
+dirpath        ="/home/operationPlatform/file/"
 oss_host        ="192.168.200.215"
 oss_port        =22
 oss_username    ="mv"

@@ -193,6 +193,7 @@ func GatewayDataUpdate() error {
 		qRestarerr, RestartCount := QueryRestartCount(gwmsg.MsgHead.TerminalId)
 		if qRestarerr != nil {
 			log.Println("++++++++++++++++++++++++++++++++++++++++查询网关重启总数失败")
+
 		}
 		gwxx.FNbChongqcs = int(RestartCount)   //	`F_NB_CHONGQCS` int(11) NOT NULL DEFAULT '0' COMMENT '重启次数',
 		gwxx.FVcDangqbbh = gwmsg.GetwayVersion //	`F_VC_DANGQBBH` varchar(512) DEFAULT NULL COMMENT '当前版本号',
@@ -202,21 +203,76 @@ func GatewayDataUpdate() error {
 		gwxx.FNbTianxsl = AntennaInfosNum //	'天线数量',
 
 		yc, _ := strconv.Atoi(gwmsg.NetWorkDelay)
-		gwxx.FNbWanglyc = yc          //'网络延迟 单位：ms',
-		gwxx.FDtZuihgxsj = time.Now() //最后更新数据时间'
+		gwxx.FNbWanglyc = yc          //网络延迟 单位：ms,
+		gwxx.FDtZuihgxsj = time.Now() //最后更新数据时间
 		//更新网关基本信息
 		uperr := UpdateGatewaydata(gwmsg.MsgHead.TerminalId, gwxx)
 		if uperr != nil {
-			log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++++更新网关信息失败", time.Now())
+			log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++++更新网关信息失败", uperr, time.Now())
+			return uperr
 		}
 	}
 
 	//2、获取网关所有列表，用于判断有的网关是否挂了
+	allerrr, allgws := QueryALlGatewaydata()
+	if allerrr != nil {
+		log.Println("++++++++++++++++++++++++++++++++++++++++获取网关所有列表，用于判断有的网关是否离线,失败", allerrr)
+		return allerrr
+	}
 
-	//3、处理已经离线的网关设备
+	//网关设备表
+	gwids := make([]string, 0)
+	for _, gw := range *allgws {
+		//http获得的在线网关
+		gwids = append(gwids, gw.FVcWanggbh)
+	}
 
+	//小切片
+	httpgwids := make([]string, 0)
+	for _, gatawaywmsg := range (*gwmsgs).Date {
+		httpgwids = append(httpgwids, gatawaywmsg.MsgHead.TerminalId)
+	}
+
+	// 初始化map
+	set := make(map[string]struct{})
+	set2 := make(map[string]struct{})
+	// 上面2部可替换为set := make(map[string]struct{})
+
+	// 将list内容传递进map,只根据key判断，所以不需要关心value的值，用struct{}{}表示
+	for _, value := range gwids {
+		set[value] = struct{}{}
+	}
+
+	for _, value := range httpgwids {
+		set2[value] = struct{}{}
+	}
+
+	for _, v := range gwids {
+		// 检查元素是否在map
+		if _, ok := set2[v]; ok {
+			fmt.Println(v, " is in the list")
+			gwxx1 := new(types.BDmWanggjcxx)
+			gwxx1.FNbZhuangt = 1 //	'状态 0：离线、1：在线',[通过最新存储时间判断]
+
+			//更新网关基本信息
+			uperr1 := UpdateGatewaydata(v, gwxx1)
+			if uperr1 != nil {
+				log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++++更新网关信息失败", uperr1, time.Now())
+				return uperr1
+			}
+		} else {
+			fmt.Println(v, " is not in the list")
+			gwxx2 := new(types.BDmWanggjcxx)
+			gwxx2.FNbZhuangt = 0 //	'状态 0：离线、1：在线',[通过最新存储时间判断]
+			//更新网关基本信息
+			uperr2 := UpdateGatewaydata(v, gwxx2)
+			if uperr2 != nil {
+				log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++++更新网关信息失败", uperr2, time.Now())
+				return uperr2
+			}
+		}
+	}
 	return nil
-
 }
 
 //任务二

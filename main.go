@@ -34,7 +34,9 @@ func main() {
 			return redis.Dial("tcp", conf.RedisAddr)
 		},
 	}
-	defer utils.Pool.Close()
+	defer func() {
+		_ = utils.Pool.Close()
+	}()
 	utils.Redisdatabasename = conf.Redisdatabasename
 	//
 	db.Errormsg_address = conf.Errormsg_address

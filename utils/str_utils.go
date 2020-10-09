@@ -93,3 +93,53 @@ func GetMD5Encode(data string) string {
 func Get16MD5Encode(data string) string {
 	return GetMD5Encode(data)[8:24]
 }
+
+//去除重复字符串
+func RemoveRepeatedElement(arr []string) (newArr []string) {
+	newArr = make([]string, 0)
+	for i := 0; i < len(arr); i++ {
+		repeat := false
+		for j := i + 1; j < len(arr); j++ {
+			if arr[i] == arr[j] {
+				repeat = true
+				break
+			}
+		}
+		if !repeat {
+			newArr = append(newArr, arr[i])
+		}
+	}
+	return newArr
+}
+
+// 已知list中元素"amber","jack"
+
+func slice() {
+	arr1 := [...]string{"a1", "b1", "c1", "d1", "m222"}
+	arr2 := [...]string{"a1", "c1"}
+	// 初始化map
+
+	set := make(map[string]struct{})
+	set2 := make(map[string]struct{})
+	// 上面2部可替换为set := make(map[string]struct{})
+
+	// 将list内容传递进map,只根据key判断，所以不需要关心value的值，用struct{}{}表示
+	for _, value := range arr1 {
+		set[value] = struct{}{}
+	}
+
+	for _, value := range arr2 {
+		set2[value] = struct{}{}
+	}
+
+	for _, v := range arr1 {
+		// 检查元素是否在map
+		if _, ok := set2[v]; ok {
+			fmt.Println(v, " is in the list")
+		} else {
+			fmt.Println(v, " is not in the list")
+
+		}
+	}
+
+}
