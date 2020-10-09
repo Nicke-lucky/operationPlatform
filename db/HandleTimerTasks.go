@@ -95,8 +95,8 @@ func HandleSecondTasks() {
 var Errormsg_address string
 var Gwmsg_address string
 var Metric_address string
-var AlarmBeginTime string
-var AlarmEndTime string
+var AlarmBeginTime string //告警查询数据
+var AlarmEndTime string   //告警查询数据
 
 //任务一
 //获取网关列表数据
