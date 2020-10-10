@@ -7,18 +7,18 @@
 ;mysql_databasename = payflow
 
 ; [mysql测试]
-mysql_hostname     =122.51.24.189
-mysql_port         = 3307
-mysql_user         = root
-mysql_pass         = Microvideo_1
-mysql_databasename = payflow
+;mysql_hostname     =122.51.24.189
+;mysql_port         = 3307
+;mysql_user         = root
+;mysql_pass         = Microvideo_1
+;mysql_databasename = payflow
 
 ; [mysql本地]
-;mysql_hostname     =127.0.0.1
-;mysql_port         = 3306
-;mysql_user         = root
-;mysql_pass         = shx19930509321
-;mysql_databasename = payflow
+mysql_hostname     =127.0.0.1
+mysql_port         = 3306
+mysql_user         = root
+mysql_pass         = shx19930509321
+mysql_databasename = payflow
 
 ;日志配置
 ;[logconf]
@@ -33,12 +33,12 @@ log_FileName     = "operationPlatform.log"
 ;redis_pass =
 
 ;[redis测试]
-redis_addr         = "172.18.70.21:6379"
-redis_databasename  = 2
+;redis_addr         = "172.18.70.21:6379"
+;redis_databasename  = 2
 
 ;[redis开发]
-;redis_addr          = "192.168.200.201:6379"
-;redis_databasename  = 2
+redis_addr          = "192.168.200.201:6379"
+redis_databasename  = 2
 
 
 ;[ip_address]结算监控6089 运维管理6077
