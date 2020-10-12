@@ -119,7 +119,7 @@ type ErrorMsg struct {
 	Id            int    `json:"id"`              //告警的id、n9e_mon数据库中event表的id
 	NodePath      string `json:"node_path"`       //对应报警策略中的节点
 	Value         string `json:"value"`           //产生报警的事件，上报到n9e中的键值
-	Etime         string `json:"etime"`           //"etime": "1600683220",报警的事件产生时的时间戳
+	Etime         int64  `json:"etime"`           //"etime": "1600683220",报警的事件产生时的时间戳
 	Name          string `json:"name"`            //"	"name": "网关日志总大小超过10GB",对应报警策略中的配置的策略名称
 	Priority      string `json:"priority"`        //"	"priority": "1", 优先级、报警优先级
 	Endpoint      string `json:"endpoint"`        //"	"endpoint": "4E944368CEE82941",节点
@@ -260,6 +260,22 @@ type QueryRestartListResp struct {
 	WorkTime    string `json:"work_time"`   //
 	//ManName     string `json:"man_name"`    //
 	//Type        string `json:"type"`        //"	 重启类型
+}
+
+//重启信息接口响应
+type RestartMsgResp struct {
+	Code int            `json:"code"`
+	Msg  string         `json:"msg"`
+	Date RestartMsgData `json:"data"`
+}
+type RestartMsgData struct {
+	Metric  string    `json:"metric"`
+	Datamsg []DataMsg `json:"data"` //"etime": "1600683220",报警的事件产生时的时间戳
+}
+type DataMsg struct {
+	Time     string `json:"time"`     //"etime": "1600683220",报警的事件产生时的时间戳
+	Endpoint string `json:"endpoint"` //"	"endpoint": "4E944368CEE82941",节点
+	Value    int    `json:"value"`    //产生报警的事件，上报到n9e中的键值
 }
 
 //天线列表请求信息

@@ -43,7 +43,7 @@ func Querygatewaylist(c *gin.Context) {
 		qpkerr, pm := db.QueryParkName(gwxx.FVcTingccbh)
 		if qpkerr != nil {
 			if fmt.Sprint(qpkerr) == "record not found" {
-				log.Println("err== `record not found`:", qpkerr)
+				log.Println("err:", qpkerr)
 
 			} else {
 				log.Println("++++++++++++++++++++++++++++++++查询停车场名称错误")
@@ -82,7 +82,22 @@ func Querygatewaylist(c *gin.Context) {
 		//   场内网关当前版本号
 		data.GetwayVersion = gwxx.FVcDangqbbh
 		//   场内网关最后更新成功时间
-		data.LastversionUpdatedatetime = gwxx.FDtZuijgxbbsj.Format("2006-01-02 15:04:05")
+		//查询重启记录表该网关最后更新时间
+		restarterr, R := db.GatewayRestarNewTime(gwxx.FVcWanggbh)
+		if restarterr != nil {
+			if fmt.Sprint(restarterr) == "record not found" {
+				log.Println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++err:", restarterr)
+				//没有重启记录
+
+			} else {
+				log.Println("++++++++++查询重启记录表该网关最后更新时间错误+++++++++")
+			}
+
+		} else {
+			//网关最后重启时间
+			data.LastversionUpdatedatetime = R.FDtChongqsj.Format("2006-01-02 15:04:05")
+		}
+
 		//天线数量
 		data.RsuNum = gwxx.FNbTianxsl
 		//延迟
@@ -93,16 +108,6 @@ func Querygatewaylist(c *gin.Context) {
 	//2、返回数据
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: datas, Message: "查询网关列表成功"})
 }
-
-/*
-//未处理告警列表查询
-func QueryUnprocessedAlarmlist(c *gin.Context) {
-	//1.获取网关列表数据
-	randStr := utils.GetRandStr(4)
-	logrus.Println("随机获取验证码文字:", randStr)
-	//2、返回数据
-	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: randStr, Message: "随机获取验证码文字成功"})
-}*/
 
 //告警列表查询
 func QueryAlarmlist(c *gin.Context) {
@@ -218,7 +223,7 @@ func QueryGatewayDeviceDetails(c *gin.Context) {
 	qerr, wgxx := db.QueryOneGatewaydata(&req)
 	if qerr != nil {
 		if fmt.Sprint(qerr) == "record not found" {
-			log.Println("  err== `record not found`:", qerr)
+			log.Println("  err:", qerr)
 			c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询网关列表时 ，该设备不存在"})
 
 			return
@@ -301,7 +306,7 @@ func Addgatewaydevice(c *gin.Context) {
 	qerr, gwdata := db.QueryGatewaydata(gwxx.FVcWanggbh)
 	if qerr != nil {
 		if fmt.Sprint(qerr) == "record not found" {
-			log.Println("db.QueryGatewaydata err== `record not found`:", qerr)
+			log.Println("db.QueryGatewaydata err:", qerr)
 		} else {
 			c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "添加设备，先查询设备信息失败"})
 			return
@@ -352,7 +357,7 @@ func AddNewVersion(c *gin.Context) {
 	qverr, data := db.QueryOneVersiondata(req.Version)
 	if qverr != nil {
 		if fmt.Sprint(qverr) == "record not found" {
-			log.Println("db.QueryGatewaydata err== `record not found`:", qverr)
+			log.Println("db.QueryGatewaydata err:", qverr)
 		} else {
 			c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "添加软件更新版本，先查询软件版本是否已上传失败"})
 			return

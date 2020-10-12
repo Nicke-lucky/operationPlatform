@@ -32,11 +32,21 @@ func TestGatewayDataPostWithJson(t *testing.T) {
 }
 
 func TestErrorDataPostWithJson(t *testing.T) {
+
 	Newdb()
 	var startetime, endtime int64
 	startetime = 1600087800
 	endtime = 1600341810
 	ErrorDataPostWithJson(startetime, endtime)
+}
+
+func TestRestartDataPostWithJson(t *testing.T) {
+	Newdb()
+	Restart_address = "http://180.76.177.104:8080/etcpark/v1/metric/list"
+	var startetime, endtime int64
+	startetime = 1600087800
+	endtime = 1900978029
+	RestartDataPostWithJson(startetime, endtime)
 }
 
 func TestMetricDataPostWithJson(t *testing.T) {

@@ -33,6 +33,7 @@ type Config struct { //配置文件要通过tag来指定配置文件中的名称
 	Errormsg_address string `ini:"errormsg_address"`
 	Gwmsg_address    string `ini:"gwmsg_address"`
 	Metric_address   string `ini:"metric_address"`
+	Restart_address  string `ini:"restart_address"`
 	//FilePath
 	FilePath string `ini:"filepath"`
 	Dirpath  string `ini:"dirpath"`

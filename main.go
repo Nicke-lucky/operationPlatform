@@ -5,7 +5,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"operationPlatform/config"
 	"operationPlatform/db"
-	"operationPlatform/router"
 	"operationPlatform/service"
 	"operationPlatform/utils"
 
@@ -25,6 +24,7 @@ func main() {
 	//结算监控数据库 "root:Microvideo_1@tcp(122.51.24.189:3307)/blacklist?charset=utf8&parseTime=true&loc=Local"
 	mstr := conf.MUserName + ":" + conf.MPass + "@tcp(" + conf.MHostname + ":" + conf.MPort + ")/" + conf.Mdatabasename + "?charset=utf8&parseTime=true&loc=Local"
 	db.DBInit(mstr) //初始化数据库
+
 	utils.Pool = &redis.Pool{
 		MaxIdle:     8,   //最大空闲连接数
 		MaxActive:   0,   //最大活跃连接数  0为没有限制
@@ -37,13 +37,15 @@ func main() {
 	defer func() {
 		_ = utils.Pool.Close()
 	}()
+
 	utils.Redisdatabasename = conf.Redisdatabasename
 	//
 	db.Errormsg_address = conf.Errormsg_address
 	db.Gwmsg_address = conf.Gwmsg_address
 	db.Metric_address = conf.Metric_address
+	db.Restart_address = conf.Restart_address
 
-	IpAddress := conf.IpAddress
+	//IpAddress := conf.IpAddress
 	//软件上传的路径
 	db.FilePath = conf.FilePath
 	//软件版本上传的oss服务器配置
@@ -56,6 +58,11 @@ func main() {
 	//goroutine1
 	go db.HandleSecondTasks()
 	//http处理运维管理平台请求
-	router.RouteInit(IpAddress)
+	//router.RouteInit(IpAddress)
+	tiker := time.NewTicker(time.Second * 150) //每15秒执行一下
+	for {
+		<-tiker.C
+		log.Println("bbbb")
+	}
 
 }

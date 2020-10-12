@@ -50,6 +50,12 @@ type QueryRestartMsgListQeq struct {
 	EndTime    string `json:"end_time"`    //重启列表请求结束时间
 }
 
+type QueryRestartMsgQeq struct {
+	BeginTime int64  `json:"startetime"` //查询告警的开始时间戳
+	EndTime   int64  `json:"endetime"`   //查询告警的结束时间戳
+	Metric    string `json:"metric"`
+}
+
 //天线列表请求信息
 type QueryRSUMsgListQeq struct {
 	TerminalId string `json:"terminal_id"` // 设备ID，如CE4C37043A520C93	//网关id

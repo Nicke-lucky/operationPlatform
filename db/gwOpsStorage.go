@@ -294,7 +294,7 @@ func QueryVersionNumdata(banbh string) (error, int) {
 	//软件更新执行表  状态 0：未完成、1：已完成更新
 	if err := db.Table("b_dm_ruanjgxzx").Where("F_VC_RUANJBBH = ?", banbh).Where("F_NB_ZHUANGT = ?", 1).Find(&vs).Error; err != nil {
 		if fmt.Sprint(err) == "record not found" {
-			log.Println("  err== `record not found`:", err)
+			log.Println("  err:", err)
 			return nil, 0
 		} else {
 			log.Println("查询 软件更新执行表ALL数据时 error :", err)
@@ -314,7 +314,7 @@ func DeleteVersionsdata(req *dto.DeleteVersionQeq) error {
 		version.FNbZhuangt = 1 //1表示删除
 		if err := db.Table("b_dm_ruanjbb").Where("F_VC_RUANJBBH = ?", v).Update(version).Error; err != nil {
 			if fmt.Sprint(err) == "record not found" {
-				log.Println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++err== `record not found`:", err)
+				log.Println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++err:", err)
 				continue
 			} else {
 				log.Println("删除 软件版本表 数据时 error :", err)
@@ -335,7 +335,7 @@ func VersionsUpdatedata(req *dto.VersionUpdateQeq) error {
 		qverr, gxjl := QueryVersionISUpdate(v.Gwid, req.Version)
 		if qverr != nil {
 			if fmt.Sprint(qverr) == "record not found" {
-				log.Println("+++++++++++++++++++++++++++++err== `record not found`:", qverr)
+				log.Println("+++++++++++++++++++++++++++++err:", qverr)
 				//不存在，就要插入呀
 				version := new(types.BDmRuanjgxzx)
 				version.FVcWanggbh = v.Gwid                              //网关编号
@@ -441,4 +441,67 @@ func QueryAlarm() (error, *types.BDmGaoj) {
 	}
 	log.Println("查询 告警信息表ALL数据")
 	return nil, &gjs[0]
+}
+
+//告警信息新增插入
+func GatewayErrorInsert(gaoj *types.BDmGaoj) error {
+	db := utils.GormClient.Client
+	if err := db.Table("b_dm_gaoj").Create(gaoj).Error; err != nil {
+		// 错误处理...
+		log.Println("Insert b_dm_gaoj error:", err)
+		return err
+	}
+	log.Println("新增 告警信息表 数据，插入成功！", "网关编号:=", gaoj.FVcWanggbh)
+	return nil
+}
+
+//告警信息查询是否已经插入过了
+func QueryGatewayError(gwid, time string) error {
+	db := utils.GormClient.Client
+	gaoj := new(types.BDmGaoj)
+	if err := db.Table("b_dm_gaoj").Where("F_VC_WANGGBH=?", gwid).Where("F_DT_GAOJSJ=?", time).Last(gaoj).Error; err != nil {
+		// 错误处理...
+		log.Println("query b_dm_gaoj error:", err)
+		return err
+	}
+	log.Println("查询 告警信息表 数据，插入成功！", "网关编号:=", gaoj.FVcWanggbh)
+	return nil
+}
+
+//重启信息新增插入
+func GatewayRestarInsert(Restar *types.BDmChongq) error {
+	db := utils.GormClient.Client
+	if err := db.Table("b_dm_chongq").Create(Restar).Error; err != nil {
+		// 错误处理...
+		log.Println("Insert b_dm_chongq error:", err)
+		return err
+	}
+	log.Println("新增 重启信息表 数据，插入成功！", "网关编号:=", Restar.FVcWanggbh)
+	return nil
+}
+
+//重启信息查询是否已经插入过了
+func QueryGatewayRestar(gwid, time string) error {
+	db := utils.GormClient.Client
+	Restar := new(types.BDmChongq)
+	if err := db.Table("b_dm_chongq").Where("F_VC_WANGGBH=?", gwid).Where("F_DT_CHONGQSJ=?", time).Last(Restar).Error; err != nil {
+		// 错误处理...
+		log.Println("query b_dm_chongq error:", err)
+		return err
+	}
+	log.Println("查询 重启信息表 数据，插入成功！", "网关编号:=", Restar.FVcWanggbh)
+	return nil
+}
+
+//网关设备重启信息查询最新时间
+func GatewayRestarNewTime(gwid string) (error, *types.BDmChongq) {
+	db := utils.GormClient.Client
+	cqs := make([]types.BDmChongq, 0)
+	if err := db.Table("b_dm_chongq").Where("F_VC_WANGGBH=?", gwid).Order("F_DT_CHONGQSJ desc").Limit(1).Find(&cqs).Error; err != nil {
+		// 错误处理...
+		log.Println(" query b_dm_chongq error:", err)
+		return err, nil
+	}
+	log.Println("查询 重启信息表 数据，插入成功！", "网关编号:=", cqs[0].FVcWanggbh)
+	return nil, &cqs[0]
 }
