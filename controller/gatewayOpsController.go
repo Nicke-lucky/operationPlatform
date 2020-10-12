@@ -217,6 +217,12 @@ func QueryGatewayDeviceDetails(c *gin.Context) {
 	//查询网关列表
 	qerr, wgxx := db.QueryOneGatewaydata(&req)
 	if qerr != nil {
+		if fmt.Sprint(qerr) == "record not found" {
+			log.Println("  err== `record not found`:", qerr)
+			c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询网关列表时 ，该设备不存在"})
+
+			return
+		}
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询网关列表时 error"})
 		return
 	}

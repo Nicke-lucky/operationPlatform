@@ -55,7 +55,7 @@ func main() {
 
 	//goroutine1
 	go db.HandleSecondTasks()
-	//http处理
+	//http处理运维管理平台请求
 	router.RouteInit(IpAddress)
 
 }
