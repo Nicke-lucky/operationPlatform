@@ -45,7 +45,7 @@ type GatewayDeviceMsg struct {
 	Deviceid                  string               `json:"deviceid"`                   //   设备ID
 	Gatewayip                 string               `json:"gatewayip"`                  //   网关IP地址，多个地址则用”, ”分隔
 	GetwayVersion             string               `json:"getway_version"`             //   场内网关版本号
-	LastversionUpdatedatetime string               `json:"lastversion_updatedatetime"` //   场内网关最后更新成功时间
+	LastversionUpdatedatetime string               `json:"lastversion_updatedatetime"` //   场内网关版本最后更新成功时间
 	AntennaInfos              []AntennaInfo        `json:"antenna_infos"`
 }
 type GatewayDeviceMsgHead struct {
@@ -301,6 +301,7 @@ type QueryGatewayOneResp struct {
 	DISKpercent   float64 `json:"disk_percent"`
 	DISK          float64 `json:"disk"`
 	Network       int64   `json:"net_work"`
+
 	//UnprocessedErrors         int     `json:"unprocessed_errors"`
 	//	Errors                    int     `json:"errors"`
 	//LastversionUpdatedatetime string  `json:"lastversion_updatedatetime"` //   场内网关最后更新成功时间

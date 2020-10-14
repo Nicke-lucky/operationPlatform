@@ -67,3 +67,11 @@ func TestGetSomeTimestamp(t *testing.T) {
 	logrus.Println(GetSomeTimestamp())
 	//1600759201
 }
+
+func TestTimeDifference(t *testing.T) {
+	t1 := time.Now()
+	time.Sleep(time.Second * 5)
+	t2 := time.Now()
+	logrus.Println(TimeDifference(t1, t2))
+	//1600759201
+}

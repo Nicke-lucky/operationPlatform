@@ -150,6 +150,7 @@ type BDmWanggjcxx struct {
 	FNbWanglyc    int       `gorm:"column:F_NB_WANGLYC"`    //	`F_NB_WANGLYC` bigint(20) DEFAULT NULL COMMENT '网络延迟 单位：ms',
 	FDtChuangjsj  time.Time `gorm:"column:F_DT_CHUANGJSJ"`  //	`F_DT_CHUANGJSJ` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 	FDtZuihgxsj   time.Time `gorm:"column:F_DT_ZUIHGXSJ"`   //	`F_DT_ZUIHGXSJ` datetime DEFAULT NULL COMMENT '网关最后更新数据时间',
+	FNbYunxsc     int       `gorm:"column:F_NB_YUNXSC"`     //`F_NB_YUNXSC` int DEFAULT NULL COMMENT '运行时长 单位：s',网关设备
 	//	PRIMARY KEY (`F_VC_WANGGBH`),
 	//	KEY `IDX_TINGCCBH` (`F_VC_TINGCCBH`),
 	//	KEY `IDX_ZHUANGT` (`F_NB_ZHUANGT`),

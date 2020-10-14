@@ -94,8 +94,10 @@ func Querygatewaylist(c *gin.Context) {
 			}
 
 		} else {
-			//网关最后重启时间
-			data.LastversionUpdatedatetime = R.FDtChongqsj.Format("2006-01-02 15:04:05")
+			if R != nil {
+				//网关最后重启时间
+				data.LastversionUpdatedatetime = R.FDtChongqsj.Format("2006-01-02 15:04:05")
+			}
 		}
 
 		//天线数量
@@ -219,13 +221,14 @@ func QueryGatewayDeviceDetails(c *gin.Context) {
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "查询网关列表,获取请求参数时 error"})
 		return
 	}
+
 	//查询网关列表
+
 	qerr, wgxx := db.QueryOneGatewaydata(&req)
 	if qerr != nil {
 		if fmt.Sprint(qerr) == "record not found" {
-			log.Println("  err:", qerr)
-			c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询网关列表时 ，该设备不存在"})
 
+			c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询网关列表时 ，该设备不存在"})
 			return
 		}
 		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询网关列表时 error"})
@@ -243,20 +246,35 @@ func QueryGatewayDeviceDetails(c *gin.Context) {
 	data.DISKpercent = wgxx.FNbYingpsyl
 	data.DISK = wgxx.FNbZongypdx
 	data.Network = int64(wgxx.FNbWanglyc)
+	data.WorkTime = utils.SecondsToTime(wgxx.FNbYunxsc) //工作时长
 
 	qerr, txs := db.QueryRSUALLdata(req.TerminalId)
 	if qerr != nil {
-		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询天线记录列表时 error"})
-		return
+		if fmt.Sprint(qerr) == "record not found" {
+		} else {
+			c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询天线记录列表,获取天线数量时 error"})
+			return
+		}
 	}
-	data.Restarts = len(*txs)
+	if txs != nil {
+		data.Restarts = len(*txs)
+	} else {
+		data.Restarts = 0
+	}
 
 	qrerr, cq := db.QueryRestartOnedata(req.TerminalId)
 	if qrerr != nil {
-		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询重启记录列表时 error"})
+		if fmt.Sprint(qrerr) == "record not found" {
+		} else {
+			c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询重启记录列表,获取重启次数时 error"})
+			return
+		}
 	}
-	data.WorkTime = utils.SecondsToTime(cq.FNbChongqlxgzsc)         //工作时长
-	data.RestartTime = cq.FDtChongqsj.Format("2006-01-02 15:04:05") //重启时间
+	if cq != nil {
+		data.RestartTime = cq.FDtChongqsj.Format("2006-01-02 15:04:05") //重启时间
+	} else {
+		data.RestartTime = ""
+	}
 
 	//2、返回数据
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: data, Message: "查询网关设备详情成功"})

@@ -61,9 +61,9 @@ func HandleMinutesTasks() {
 //goroutine3
 //4定时任务 按秒的
 func HandleSecondTasks() {
-	tiker := time.NewTicker(time.Second * 120) //每15秒执行一下
+	tiker := time.NewTicker(time.Second * 300) //每15秒执行一下
 	for {
-		log.Println("执行线程3，处理按分钟的定时任务44444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444")
+		log.Println("执行线程3，处理按分钟的定时任务444444444444444444444444444444444444")
 		//任务一
 		//获取网关列表数据,并更新数据
 		gwuperr := GatewayDataUpdate()
@@ -120,7 +120,7 @@ func GatewayDataUpdate() error {
 	//1、post请求获取网关基本信息
 	gwmsgs, err := GatewayDataPostWithJson()
 	if err != nil {
-		log.Println("获取网关基本信息失败", err)
+		log.Println("获取网关基本信息失败：", err)
 		return err
 	}
 
@@ -134,7 +134,7 @@ func GatewayDataUpdate() error {
 			//不存在就插入
 			if fmt.Sprint(qerr) == "record not found" {
 				//log.Println("Queryerr== `record not found`:", qerr)
-				log.Println("新网关", gwd1, "新网关设备需要插入数据库", qerr)
+				log.Println("qerr:", qerr, "是新网关：", gwd1, "新网关设备需要插入数据库")
 				//
 				gwxx1 := new(types.BDmWanggjcxx)
 				gwxx1.FVcWanggbh = gwmsg.MsgHead.TerminalId //	 '网关编号',
@@ -152,22 +152,24 @@ func GatewayDataUpdate() error {
 				}
 
 				gwxx.FVcDangqbbh = gwmsg.GetwayVersion                                    //'当前版本号',
-				gwxx.FDtZuijgxbbsj = utils.StrTimeTotime(gwmsg.LastversionUpdatedatetime) // '最近更新版本时间',
-
+				gwxx.FDtZuijgxbbsj = utils.StrTimeTotime(gwmsg.LastversionUpdatedatetime) // '场内网关最近更新版本时间',
+				yxsc, _ := strconv.Atoi(gwmsg.ProgrameRuntime)
+				gwxx.FNbYunxsc = yxsc
 				//插入新网关
 				inerr := GatewayInsert(gwxx1)
 				if inerr != nil {
-					log.Println("++++++++++++++++++++++++++++++++++++++++插入新网关失败")
+					log.Println("++++++++++++++++++++++++++++++++++++++++插入新网关失败：", inerr)
 				}
 
 				continue
 			} else {
-				log.Println("++++++++++++++++++++++++++++++++++++++++查询网关是否已经存在时，查询失败")
+				log.Println("++++++++++++++++++++++++++++++++++++++++查询网关是否已经存在时，查询失败", qerr)
 				continue
 			}
 		}
 
 		//2.2 如果网关设备id存在，更新 网关基本信息记录
+		log.Println("+++++++++++++++网关已经存在", "qerr:", qerr)
 
 		gwxx.FVcWanggbh = gwmsg.MsgHead.TerminalId //'网关编号',
 		gwxx.FVcGongsID = gwmsg.MsgHead.CompanyId  //'公司ID',
@@ -192,31 +194,27 @@ func GatewayDataUpdate() error {
 		//告警总数，是从告警列表中获取的
 		errornum, qEerrorerr := QueryErrordata(gwmsg.MsgHead.TerminalId)
 		if qEerrorerr != nil {
-			log.Println("++++++++++++++++++++++++++++++++++++++++查询网关告警总数失败")
-			gwxx.FNbGaojzs = int(errornum) // '告警总数',
-		} else {
-			gwxx.FNbGaojzs = int(errornum) // '告警总数',
+			log.Println("++++++++++++++++++++++++++++++++++++++++查询网关告警总数失败:", qEerrorerr)
 		}
-		log.Println("++++++++++++++++++++++++++++++++++++++++告警总数", gwxx.FNbGaojzs)
+		gwxx.FNbGaojzs = int(errornum) // '告警总数',
 
 		//查询网关未处理告警总数
 		unnum, qunerr := QueryUndisposedError(gwmsg.MsgHead.TerminalId)
 		if qunerr != nil {
-			log.Println("++++++++++++++++++++++++++++++++++++++++查询网关未处理告警总数失败")
-			gwxx.FNbWeiclgjs = int(unnum) // '未处理告警数',
-		} else {
-			gwxx.FNbWeiclgjs = int(unnum) // '未处理告警数','
+			log.Println("+++++++++++++++++++++++查询网关未处理告警总数失败:", qunerr)
+
 		}
-		log.Println("++++++++++++++++++++++++++++++++++++++++查询网关未处理告警总数:", gwxx.FNbWeiclgjs)
+		gwxx.FNbWeiclgjs = int(unnum) // '未处理告警数','
 
 		//查询网关重启次数
 		qRestarerr, RestartCount := QueryRestartCount(gwmsg.MsgHead.TerminalId)
 		if qRestarerr != nil {
-			log.Println("++++++++++++++++++++++++++++++++++++++++查询网关重启总数失败")
+			log.Println("查询网关重启总数失败:", qRestarerr)
 
 		}
 		gwxx.FNbChongqcs = int(RestartCount) //	 '重启次数',
-		log.Println("++++++++++++++++++++++++++++++++++++++++查询网关重启次数:", gwxx.FNbChongqcs)
+
+		log.Println("查询网关未处理告警总数:", gwxx.FNbWeiclgjs, "查询网关告警总数:", gwxx.FNbGaojzs, "查询网关重启次数:", gwxx.FNbChongqcs)
 
 		gwxx.FVcDangqbbh = gwmsg.GetwayVersion //	 '当前版本号',
 
@@ -225,72 +223,112 @@ func GatewayDataUpdate() error {
 		gwxx.FNbTianxsl = AntennaInfosNum //	'天线数量',
 
 		yc, _ := strconv.Atoi(gwmsg.NetWorkDelay)
-		gwxx.FNbWanglyc = yc          //网络延迟 单位：ms,
-		gwxx.FDtZuihgxsj = time.Now() //最后更新数据时间
-		//更新网关基本信息
+		gwxx.FNbWanglyc = yc                                     //网络延迟 单位：ms,
+		gwxx.FDtZuihgxsj = utils.StrTimeTotime(gwmsg.UpdateTime) //最后更新数据时间 采集时间
+
+		yxsc, _ := strconv.Atoi(gwmsg.ProgrameRuntime) //运行时间 ：s
+		gwxx.FNbYunxsc = yxsc                          //运行时间 字符串
+
+		//1、更新网关基本信息
 		uperr := UpdateGatewaydata(gwmsg.MsgHead.TerminalId, gwxx)
 		if uperr != nil {
-			log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++++更新网关信息失败", uperr, time.Now())
+			log.Println("++++++++++++++++++++++++++++更新网关信息失败:", uperr, time.Now())
 			return uperr
 		}
+		//2、新增天线信息
+		for _, tianxian := range gwmsg.AntennaInfos {
+			//把天线信息插入数据库
+			antennaInfo := new(types.BDmTianxxx)
+			antennaInfo.FVcWanggbh = gwmsg.MsgHead.TerminalId
+			antennaInfo.FVcChedwyid = tianxian.Laneid
+			antennaInfo.FVcIpdz = tianxian.Rsuip
+
+			//不正常的时候
+			if tianxian.Isregister != "1" {
+				antennaInfo.FDtShangcqdsj = utils.StrTimeTotime(tianxian.AntennaStatusUpdatetime) //上一次启动时间
+
+				//连续工作时长【通过时间差获得】
+				sjstr := utils.TimeDifference(time.Now(), antennaInfo.FDtShangcqdsj)
+
+				sj := strings.Split(sjstr, "s")
+				s, _ := strconv.Atoi(sj[0])
+				antennaInfo.FNbLianxgzsc = s // 连续工作时长秒
+			} else {
+				log.Println("正常使用中")
+			}
+
+			//插入之前先查询
+			qrsuerr, RSUdata := QueryRSUOnedata(antennaInfo.FVcWanggbh, antennaInfo.FVcChedwyid)
+			if qrsuerr != nil {
+
+				//如果不存在，则新增
+			}
+
+			//如果存在，则更新
+			log.Println(RSUdata)
+
+		}
+
 	}
 
 	//3、获取网关所有列表，用于判断有的网关是否挂了
 	allerr, allgws := QueryALlGatewaydata()
 	if allerr != nil {
-		log.Println("++++++++++++++++++++++++++++++++++++++++获取网关所有列表，用于判断有的网关是否离线,失败", allerr)
-		return allerr
-	}
+		log.Println("++++++++++++++++++++++++++++++++++++++++获取网关所有列表，用于判断有的网关是否离线,失败:", allerr)
+		//	return allerr
+	} else {
+		//网关设备表
+		gwids := make([]string, 0)
+		for _, gw := range *allgws {
+			//http获得的在线网关
+			gwids = append(gwids, gw.FVcWanggbh)
+		}
 
-	//网关设备表
-	gwids := make([]string, 0)
-	for _, gw := range *allgws {
-		//http获得的在线网关
-		gwids = append(gwids, gw.FVcWanggbh)
-	}
+		//小切片
+		httpgwids := make([]string, 0)
+		for _, gatawaywmsg := range (*gwmsgs).Date {
+			httpgwids = append(httpgwids, gatawaywmsg.MsgHead.TerminalId)
+		}
 
-	//小切片
-	httpgwids := make([]string, 0)
-	for _, gatawaywmsg := range (*gwmsgs).Date {
-		httpgwids = append(httpgwids, gatawaywmsg.MsgHead.TerminalId)
-	}
+		// 初始化map
+		set := make(map[string]struct{})
+		set2 := make(map[string]struct{})
+		// 上面2部可替换为set := make(map[string]struct{})
 
-	// 初始化map
-	set := make(map[string]struct{})
-	set2 := make(map[string]struct{})
-	// 上面2部可替换为set := make(map[string]struct{})
+		// 将list内容传递进map,只根据key判断，所以不需要关心value的值，用struct{}{}表示
+		for _, value := range gwids {
+			set[value] = struct{}{}
+		}
 
-	// 将list内容传递进map,只根据key判断，所以不需要关心value的值，用struct{}{}表示
-	for _, value := range gwids {
-		set[value] = struct{}{}
-	}
+		for _, value := range httpgwids {
+			set2[value] = struct{}{}
+		}
 
-	for _, value := range httpgwids {
-		set2[value] = struct{}{}
-	}
+		for _, v := range gwids {
+			// 检查元素是否在map
+			if _, ok := set2[v]; ok {
 
-	for _, v := range gwids {
-		// 检查元素是否在map
-		if _, ok := set2[v]; ok {
-			fmt.Println(v, " is in the list")
-			gwxx1 := new(types.BDmWanggjcxx)
-			gwxx1.FNbZhuangt = 1 //	'状态 0：离线、1：在线',[通过最新存储时间判断]
+				gwxx1 := new(types.BDmWanggjcxx)
+				gwxx1.FNbZhuangt = 1 //	'状态 0：离线、1：在线',[通过最新存储时间判断]
 
-			//更新网关基本信息
-			uperr1 := UpdateGatewaydata(v, gwxx1)
-			if uperr1 != nil {
-				log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++++更新网关信息失败", uperr1, time.Now())
-				return uperr1
-			}
-		} else {
-			fmt.Println(v, " is not in the list")
-			gwxx2 := new(types.BDmWanggjcxx)
-			gwxx2.FNbZhuangt = 0 //	'状态 0：离线、1：在线',[通过最新存储时间判断]
-			//更新网关基本信息
-			uperr2 := UpdateGatewaydata(v, gwxx2)
-			if uperr2 != nil {
-				log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++++更新网关信息失败", uperr2, time.Now())
-				return uperr2
+				//更新网关基本信息
+				log.Println(v, " is in the list", "状态 0：离线、1：在线", gwxx1.FNbZhuangt)
+				uperr1 := UpdateGatewaydata(v, gwxx1)
+				if uperr1 != nil {
+					log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++++更新网关信息失败:", uperr1, time.Now())
+					return uperr1
+				}
+			} else {
+
+				gwxx2 := new(types.BDmWanggjcxx)
+				gwxx2.FNbZhuangt = 0 //	'状态 0：离线、1：在线',[通过最新存储时间判断]
+				//更新网关基本信息
+				log.Println(v, " is not in the list", "状态 0：离线、1：在线", gwxx2.FNbZhuangt)
+				uperr2 := UpdateGatewaydata(v, gwxx2)
+				if uperr2 != nil {
+					log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++++更新网关信息失败:", uperr2, time.Now())
+					return uperr2
+				}
 			}
 		}
 	}
@@ -316,7 +354,7 @@ func GatewayMetricDataUpdate() error {
 					if fmt.Sprint(qgwerr) == "record not found" {
 						//log.Println("  err== `record not found`:", qgwerr)
 						//没有找到，说明该cpu信息还没有在数据库中有对应的设备记录
-						log.Println(qgwerr, "没有找到，说明该cpu信息还没有在数据库中有对应的设备记录+++++++++++++++++")
+						log.Println("+++++++++++++++++", qgwerr, "没有找到，说明该cpu信息还没有在数据库中有对应的设备记录")
 						continue
 					} else {
 						log.Println("+++++++++++++++++++++++++++++err==:", qgwerr)
@@ -331,10 +369,9 @@ func GatewayMetricDataUpdate() error {
 				gwxx.FDtZuihgxsj = utils.StrTimeTotime(cpu.Time) //数据采集时间
 				upcpuerr := UpdateGatewaydata(gwdata.FVcWanggbh, gwxx)
 				if upcpuerr != nil {
-					log.Println(upcpuerr, "更新cpu信息失败+++++++++++++++++")
+					log.Println("+++++++++++++++++", "更新cpu信息失败", upcpuerr)
 					continue
 				}
-
 			}
 
 		} else {
@@ -357,7 +394,7 @@ func GatewayMetricDataUpdate() error {
 					if fmt.Sprint(qgwerr) == "record not found" {
 						//	log.Println("err== `record not found`:", qgwerr)
 						//没有找到，说明该MeM信息还没有在数据库中有对应的设备记录
-						log.Println(qgwerr, "没有找到，说明该MeM信息还没有在数据库中有对应的设备记录+++++++++++++++++")
+						log.Println("+++++++++++++++++", qgwerr, "没有找到，说明该MeM信息还没有在数据库中有对应的设备记录")
 						continue
 					} else {
 						log.Println("+++++++++++++++++++++++++++++=err==:", qgwerr)
@@ -372,7 +409,7 @@ func GatewayMetricDataUpdate() error {
 				gwxx.FDtZuihgxsj = utils.StrTimeTotime(MeM.Time) //数据采集时间
 				upMeMerr := UpdateGatewaydata(memdata.FVcWanggbh, gwxx)
 				if upMeMerr != nil {
-					log.Println(upMeMerr, "更新MeM信息失败+++++++++++++++++")
+					log.Println("+++++++++++++++++", upMeMerr, "更新MeM信息失败")
 					continue
 				}
 
@@ -401,7 +438,7 @@ func GatewayMetricDataUpdate() error {
 					if fmt.Sprint(qgwerr) == "record not found" {
 						//log.Println("err== `record not found`:", qgwerr)
 						//没有找到，说明该MeMYSY信息还没有在数据库中有对应的设备记录
-						log.Println(qgwerr, "没有找到，说明该MeMYSY信息还没有在数据库中有对应的设备记录+++++++++++++++++")
+						log.Println("+++++++++++++++++", qgwerr, "没有找到，说明该MeMYSY信息还没有在数据库中有对应的设备记录")
 						continue
 					} else {
 						log.Println("+++++++++++++++++++++++++++++=err==:", qgwerr)
@@ -443,7 +480,7 @@ func GatewayMetricDataUpdate() error {
 					if fmt.Sprint(qgwerr) == "record not found" {
 						//log.Println("err== `record not found`:", qgwerr)
 						//没有找到，说明该MeMZDX信息还没有在数据库中有对应的设备记录
-						log.Println(qgwerr, "没有找到，说明该MeMZDX信息还没有在数据库中有对应的设备记录+++++++++++++++++")
+						log.Println("+++++++++++++++++", qgwerr, "没有找到，说明该MeMZDX信息还没有在数据库中有对应的设备记录")
 						continue
 					} else {
 						log.Println("+++++++++++++++++++++++++++++=err==:", qgwerr)
@@ -457,7 +494,7 @@ func GatewayMetricDataUpdate() error {
 				gwxx.FDtZuihgxsj = utils.StrTimeTotime(MeMZDX.Time)
 				upMeMZDXerr := UpdateGatewaydata(MeMZDXdata.FVcWanggbh, gwxx)
 				if upMeMZDXerr != nil {
-					log.Println(upMeMZDXerr, "更新MeMZDX信息失败+++++++++++++++++")
+					log.Println("+++++++++++++++++", upMeMZDXerr, "更新MeMZDX信息失败")
 					continue
 				}
 
@@ -487,7 +524,7 @@ func GatewayMetricDataUpdate() error {
 					if fmt.Sprint(Diskerr) == "record not found" {
 						//log.Println("err== `record not found`:", Diskerr)
 						//没有找到，说明该Disk信息还没有在数据库中有对应的设备记录
-						log.Println(Diskerr, "没有找到，说明该Disk信息还没有在数据库中有对应的设备记录+++++++++++++++++")
+						log.Println("+++++++++++++++++", Diskerr, "没有找到，说明该Disk信息还没有在数据库中有对应的设备记录")
 						continue
 					} else {
 						log.Println("+++++++++++++++++++++++++++++=err==:", Diskerr)
@@ -502,7 +539,7 @@ func GatewayMetricDataUpdate() error {
 				gwxx.FDtZuihgxsj = utils.StrTimeTotime(Disk.Time) //数据采集时间
 				upDiskerr := UpdateGatewaydata(Diskdata.FVcWanggbh, gwxx)
 				if upDiskerr != nil {
-					log.Println(upDiskerr, "更新Disk信息失败+++++++++++++++++")
+					log.Println("+++++++++++++++++", upDiskerr, "更新Disk信息失败")
 					continue
 				}
 
@@ -532,7 +569,7 @@ func GatewayMetricDataUpdate() error {
 					if fmt.Sprint(DiskSYDXerr) == "record not found" {
 						//log.Println("err== `record not found`:", DiskSYDXerr)
 						//没有找到，说明该DiskSYDX信息还没有在数据库中有对应的设备记录
-						log.Println(DiskSYDXerr, "没有找到，说明该DiskSYDX信息还没有在数据库中有对应的设备记录+++++++++++++++++")
+						log.Println("+++++++++++++++++", DiskSYDXerr, "没有找到，说明该DiskSYDX信息还没有在数据库中有对应的设备记录+++++++++++++++++")
 						continue
 					} else {
 						log.Println("+++++++++++++++++++++++++++++=err==:", DiskSYDXerr)
@@ -575,7 +612,7 @@ func GatewayMetricDataUpdate() error {
 					if fmt.Sprint(DiskZDXerr) == "record not found" {
 						//log.Println("err== `record not found`:", DiskZDXerr)
 						//没有找到，说明该DiskZDX信息还没有在数据库中有对应的设备记录
-						log.Println(DiskZDXerr, "没有找到，说明该DiskZDX信息还没有在数据库中有对应的设备记录+++++++++++++++++")
+						log.Println("+++++++++++++++++", DiskZDXerr, "没有找到，说明该DiskZDX信息还没有在数据库中有对应的设备记录+++++++++++++++++")
 						continue
 					} else {
 						log.Println("+++++++++++++++++++++++++++++=err==:", DiskZDXerr)
@@ -610,23 +647,21 @@ func GatewayAlarmDataUpdate() error {
 	// 获取最新一次告警时间
 	qerr, gjxxsj := QueryAlarm()
 	if qerr != nil {
-		log.Println("error:", qerr, gjxxsj)
-
 		if fmt.Sprint(qerr) == "record not found" {
-			log.Println("err== `record not found`:", qerr)
+			log.Println("err:", qerr)
 			beginTime = utils.GetSomeTimesstamp(utils.StrTimeTotime("2020-10-01 00:00:00"))
 		}
 	} else {
-		log.Println("gjxx:", gjxxsj.FDtGaojsj)
-		//上一次告警时间的
+		log.Println("gjxx:", gjxxsj.FDtGaojsj, "error:", qerr)
+		//上一次告警时间的最新值
 		beginTime = utils.GetSomeTimesstamp(gjxxsj.FDtGaojsj)
 	}
 	endTime = utils.GetTimestamp()
-
+	log.Println("beginTime:", beginTime, "endTime:", endTime)
 	//1、post请求获取 调告警数据获取接口
 	errormsgs, err := ErrorDataPostWithJson(beginTime, endTime)
 	if err != nil {
-		log.Println("post请求获取 调告警数据获取接口错误", err)
+		log.Println("post请求获取 调告警数据获取接口错误：", err)
 		return err
 	}
 	log.Println("post请求获取 调告警数据获取接口 获取数据：", len(errormsgs.Date))
@@ -644,13 +679,12 @@ func GatewayAlarmDataUpdate() error {
 		errmsg.FDtChulsj = utils.DateToNowdate()
 
 		//告警信息插入前先查询该记录是否存在
-		qEerr := QueryGatewayError(errmsg.FVcWanggbh, st)
+		qEerr := QueryGatewayError(errmsg.FVcWanggbh, st, errmsg.FVcGaojms)
 		if qEerr != nil {
 			if fmt.Sprint(qEerr) == "record not found" {
 				//log.Println("  err== `record not found`:", qEerr)
 				//没有找到，说明该cpu信息还没有在数据库中有对应的设备记录
 				log.Println(qEerr, "没有找到，说明该告警信息还没有在数据库插入++++++需要插入+++++++++++")
-
 				//如果不存在则插入
 				inerr := GatewayErrorInsert(errmsg)
 				if inerr != nil {
@@ -664,7 +698,7 @@ func GatewayAlarmDataUpdate() error {
 				continue
 			}
 		}
-		log.Println(qEerr, " 说明该告警信息已经存在数据库++++++不需要重新插入+++++++++++")
+		log.Println(qEerr, " 说明该告警信息已经存在数据库++++++【不需要】重新插入+++++++++++")
 
 	}
 	return nil
@@ -675,20 +709,22 @@ func GatewayAlarmDataUpdate() error {
 func GatewayRestartDataUpdate() error {
 	//查询的起始时间，查询的结束时间
 	var beginTime, endTime int64
-	// 获取最新一次告警时间
-	qerr, gjxxsj := QueryAlarm()
+	// 获取最新一次重启时间
+	qerr, gjxxsj := QueryRestartNewTime()
 	if qerr != nil {
 		log.Println("error:", qerr, gjxxsj)
 		if fmt.Sprint(qerr) == "record not found" {
-			log.Println("  err== `record not found`:", qerr)
+
 			beginTime = utils.GetSomeTimesstamp(utils.StrTimeTotime("2020-10-01 00:00:00"))
+			log.Println("err:", qerr)
 		}
 	} else {
-		log.Println("gjxx:", gjxxsj.FDtGaojsj)
-		//上一次告警时间的
-		beginTime = utils.GetSomeTimesstamp(gjxxsj.FDtGaojsj)
+		log.Println("gjxx:", gjxxsj.FDtChongqsj)
+		//上一次重启时间的
+		beginTime = utils.GetSomeTimesstamp(gjxxsj.FDtChongqsj)
 	}
 	endTime = utils.GetTimestamp() //现在的时间戳
+	log.Println("beginTime:", beginTime, "endTime:", endTime)
 
 	//1、post请求获取 调告警数据获取接口
 	restartmsgs, err := RestartDataPostWithJson(beginTime, endTime)
@@ -722,12 +758,13 @@ func GatewayRestartDataUpdate() error {
 				}
 
 			} else {
-				log.Println(qrerr, "查询重启信息是否在没有在数据库错误+++++++++++++++++")
+				log.Println(qrerr, "查询重启信息是否在没有在数据库时，错误+++++++++++++++++")
 				continue
 			}
 		}
-		log.Println(qrerr, " 说明该重启信息已经存在数据库++++++不需要重新插入+++++++++++")
+		log.Println(qrerr, " 说明该重启信息已经存在数据库++++++【不需要重新插入】+++++++++++")
 	}
+
 	return nil
 }
 
@@ -756,7 +793,7 @@ func GatewayDataPostWithJson() (*dto.GatewayDeviceMsgResp, error) {
 	if unmerr != nil {
 		log.Println("json.Unmarshal error", unmerr)
 	}
-	log.Println("网关基础信息查询接口 Post request with json result:", Resp)
+	log.Println("网关基础信息查询接口 Post request with json result:", len(Resp.Date))
 	return Resp, nil
 }
 
@@ -779,7 +816,7 @@ func ErrorDataPostWithJson(beginTime int64, endTime int64) (*dto.ErrorMsgResp, e
 	if unmerr != nil {
 		log.Println("json.Unmarshal error", unmerr)
 	}
-	log.Printf("Post request with json result:%v\n", Resp)
+	log.Printf("Post request with json result:%v", len(Resp.Date))
 	return Resp, nil
 }
 
@@ -803,7 +840,7 @@ func RestartDataPostWithJson(beginTime int64, endTime int64) (*dto.RestartMsgRes
 	if unmerr != nil {
 		log.Println("json.Unmarshal error", unmerr)
 	}
-	log.Printf("Post request with json result:%v\n", Resp)
+	log.Printf("Post request with json result:%v", len(Resp.Date.Datamsg))
 	return Resp, nil
 }
 
@@ -813,7 +850,9 @@ func MetricDataPostWithJson(metric string) (*dto.MetricMsgResp, error) {
 	metricreq := dto.QueryMetricMsgQeq{Metric: metric}
 	ba, _ := json.Marshal(metricreq)
 	//POST
-	log.Println("Metric_address:", Metric_address)
+
+	log.Println("Metric_address:", Metric_address, "metric is:", metric)
+
 	resp, err := http.Post(Metric_address, "application/json", bytes.NewBuffer([]byte(ba)))
 	if err != nil {
 		log.Println("post请求指标信息查询接口失败:", err)
@@ -825,6 +864,6 @@ func MetricDataPostWithJson(metric string) (*dto.MetricMsgResp, error) {
 	if unmerr != nil {
 		log.Println("json.Unmarshal error", unmerr)
 	}
-	log.Printf("Post request with json result:%v\n", Resp)
+	log.Printf("Post request with json result:%v", len(Resp.MetricMsgDate.Date))
 	return Resp, nil
 }

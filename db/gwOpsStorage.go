@@ -41,10 +41,10 @@ func QueryGatewaydata(FVcWanggbh string) (error, *types.BDmWanggjcxx) {
 func UpdateGatewaydata(Wanggbh string, gwdata *types.BDmWanggjcxx) error {
 	db := utils.GormClient.Client
 	if err := db.Table("b_dm_wanggjcxx").Where("F_VC_WANGGBH=?", Wanggbh).Updates(gwdata).Error; err != nil {
-		log.Println("更新网关基础信息表 error", err)
+		log.Println("更新网关基础信息表 error:", err)
 		return err
 	}
-	log.Println("更新网关基础信息表 ok !")
+	log.Println("更新网关基础信息表 ok !", Wanggbh, gwdata.FNbZhuangt)
 	return nil
 }
 
@@ -57,7 +57,7 @@ func QueryALlGatewaydata() (error, *[]types.BDmWanggjcxx) {
 		log.Println("查询 网关基础信息表所有数据时QueryALlGatewaydata error :", err)
 		return err, nil
 	}
-	log.Println("查询网关基础信息表 数据，成功！数据结果:")
+	log.Println("查询网关基础信息表数据，用于判断是否离线成功！所有的网关数据数量:", len(gwxxs))
 	return nil, &gwxxs
 }
 
@@ -215,6 +215,19 @@ func QueryRSUALLdata(TerminalId string) (error, *[]types.BDmTianxxx) {
 	return nil, &gjs
 }
 
+//查询天线信息
+func QueryRSUOnedata(TerminalId, chedaoid string) (error, *types.BDmTianxxx) {
+	db := utils.GormClient.Client
+	tx := new(types.BDmTianxxx)
+	log.Println("req.TerminalId:", TerminalId)
+	if err := db.Table("b_dm_tianxxx").Where("F_VC_WANGGBH =?", TerminalId).Where("F_VC_CHEDWYID =?", chedaoid).Last(&tx).Error; err != nil {
+		log.Println("查询 天线信息表ALL数据时 error :", err)
+		return err, nil
+	}
+	log.Println("查询天线信息表 数据，成功！数据结果:", tx.FVcWanggbh, tx.FVcChedwyid, tx.FVcIpdz)
+	return nil, tx
+}
+
 //1.获取网关设备详情
 func QueryOneGatewaydata(req *dto.QueryGatewayOneQeqdata) (error, *types.BDmWanggjcxx) {
 	db := utils.GormClient.Client
@@ -327,6 +340,7 @@ func DeleteVersionsdata(req *dto.DeleteVersionQeq) error {
 	return nil
 }
 
+//版本更新执行操作之将计划更新内容存数据库
 func VersionsUpdatedata(req *dto.VersionUpdateQeq) error {
 	db := utils.GormClient.Client
 	//要更新的设备软件版本
@@ -434,13 +448,13 @@ func QueryParkName(parkid string) (error, *types.BTccTingcc) {
 //获取告警的最新告警时间
 func QueryAlarm() (error, *types.BDmGaoj) {
 	db := utils.GormClient.Client
-	gjs := make([]types.BDmGaoj, 0)
-	if err := db.Table("b_dm_gaoj").Order("F_DT_GAOJSJ desc").Limit(1).Find(&gjs).Error; err != nil {
+	gjs := new(types.BDmGaoj)
+	if err := db.Table("b_dm_gaoj").Order("F_DT_GAOJSJ desc"). /*.Limit(1)*/ Last(gjs).Error; err != nil {
 		log.Println("查询 获取告警的最新告警时间 error :", err)
 		return err, nil
 	}
-	log.Println("查询 告警信息表ALL数据")
-	return nil, &gjs[0]
+	log.Println("获取告警的最新告警时间", gjs.FDtGaojsj)
+	return nil, gjs
 }
 
 //告警信息新增插入
@@ -456,15 +470,15 @@ func GatewayErrorInsert(gaoj *types.BDmGaoj) error {
 }
 
 //告警信息查询是否已经插入过了
-func QueryGatewayError(gwid, time string) error {
+func QueryGatewayError(gwid, time, ms string) error {
 	db := utils.GormClient.Client
 	gaoj := new(types.BDmGaoj)
-	if err := db.Table("b_dm_gaoj").Where("F_VC_WANGGBH=?", gwid).Where("F_DT_GAOJSJ=?", time).Last(gaoj).Error; err != nil {
+	if err := db.Table("b_dm_gaoj").Where("F_VC_WANGGBH=?", gwid).Where("F_DT_GAOJSJ=?", time).Where("F_VC_GAOJMS=?", ms).Last(gaoj).Error; err != nil {
 		// 错误处理...
 		log.Println("query b_dm_gaoj error:", err)
 		return err
 	}
-	log.Println("查询 告警信息表 数据，插入成功！", "网关编号:=", gaoj.FVcWanggbh)
+	log.Println("查询 告警信息表 数据是否已经插入过了成功！", "网关编号:=", gaoj.FVcWanggbh)
 	return nil
 }
 
@@ -496,12 +510,24 @@ func QueryGatewayRestar(gwid, time string) error {
 //网关设备重启信息查询最新时间
 func GatewayRestarNewTime(gwid string) (error, *types.BDmChongq) {
 	db := utils.GormClient.Client
-	cqs := make([]types.BDmChongq, 0)
-	if err := db.Table("b_dm_chongq").Where("F_VC_WANGGBH=?", gwid).Order("F_DT_CHONGQSJ desc").Limit(1).Find(&cqs).Error; err != nil {
+	cqs := new(types.BDmChongq)
+	if err := db.Table("b_dm_chongq").Where("F_VC_WANGGBH=?", gwid).Order("F_DT_CHONGQSJ desc"). /*.Limit(1)*/ Last(cqs).Error; err != nil {
 		// 错误处理...
 		log.Println(" query b_dm_chongq error:", err)
 		return err, nil
 	}
-	log.Println("查询 重启信息表 数据，插入成功！", "网关编号:=", cqs[0].FVcWanggbh)
-	return nil, &cqs[0]
+	log.Println("查询 重启信息表 数据，插入成功！", "网关编号:=", cqs.FVcWanggbh, cqs.FDtChongqsj)
+	return nil, cqs
+}
+
+//获取重启表的最新重启时间
+func QueryRestartNewTime() (error, *types.BDmChongq) {
+	db := utils.GormClient.Client
+	cqsj := new(types.BDmChongq)
+	if err := db.Table("b_dm_chongq").Order("F_DT_CHONGQSJ desc"). /*.Limit(1)*/ Last(cqsj).Error; err != nil {
+		log.Println("查询 获取重启的最新重启时间 error :", err)
+		return err, nil
+	}
+	log.Println("获取重启的最新重启时间", cqsj.FDtChongqsj)
+	return nil, cqsj
 }
