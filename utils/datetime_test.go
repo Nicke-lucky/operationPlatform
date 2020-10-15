@@ -46,7 +46,8 @@ func TestGetTimestamp(t *testing.T) {
 
 //
 func TestTimestampToFormat(t *testing.T) {
-	logrus.Println(TimestampToFormat(1600759201))
+	logrus.Println(TimestampToFormat(1600678120))
+	logrus.Println(StrTimeTotime(TimestampToFormat(1600678120)))
 	//"2020-09-22 15:20:01"
 }
 
@@ -73,5 +74,5 @@ func TestTimeDifference(t *testing.T) {
 	time.Sleep(time.Second * 5)
 	t2 := time.Now()
 	logrus.Println(TimeDifference(t1, t2))
-	//1600759201
+
 }

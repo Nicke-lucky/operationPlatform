@@ -94,8 +94,8 @@ type DeleteVersionQeq struct {
 }
 
 type VersionUpdateQeq struct {
-	Gwids        []Gwmsg `json:"gwids"` //
-	Version      string  `json:"version"`
+	Gwids        []Gwmsg `json:"gwids"`   //
+	Version      string  `json:"version"` //软件版本名字就是软件版本号名称
 	UpdateStatus int     `json:"update_status"`
 	UpdateTime   string  `json:"update_time"`
 }

@@ -54,12 +54,16 @@ metric_address =http://180.76.177.104:8080/etcpark/v1/metric/last
 
 ;查询告警信息 http://180.76.177.104:8080/etcpark/v1/alarm/list
 errormsg_address = http://180.76.177.104:8080/etcpark/v1/alarm/list
+
 ;查询重启信息接口
 restart_address =http://180.76.177.104:8080/etcpark/v1/metric/list
 
 ;查询网关基本信息接口 http://172.18.70.22:8080/etcpark/dataserver/gateway/list
 gwmsg_address    = http://122.51.24.189:8080/etcpark/dataserver/gateway/list
 
+;[生产环境]
+;查询网关基本信息接口 http://172.18.70.11:8080/etcpark/dataserver/gateway/list
+;gwmsg_address    = http://172.18.70.11:8080/etcpark/dataserver/gateway/list
 
 
 

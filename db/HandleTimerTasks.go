@@ -61,7 +61,7 @@ func HandleMinutesTasks() {
 //goroutine3
 //4定时任务 按秒的
 func HandleSecondTasks() {
-	tiker := time.NewTicker(time.Second * 300) //每15秒执行一下
+	tiker := time.NewTicker(time.Second * 30) //每15秒执行一下
 	for {
 		log.Println("执行线程3，处理按分钟的定时任务444444444444444444444444444444444444")
 		//任务一
@@ -93,13 +93,15 @@ func HandleSecondTasks() {
 
 		}
 
-		//任务五
+		//任务五 先新增，后更新
 		//获取网关列表数据,并更新数据
-		gwNewuperr := GatewayDataUpdate()
-		if gwNewuperr != nil {
-			log.Println("++++++++++++++++++++++++++【任务一 有错误 执行获取网关列表数据,并更新数据】+++++++++++++++++++++", gwNewuperr)
-		}
+		//gwNewuperr := GatewayDataUpdate()
+		//if gwNewuperr != nil {
+		//	log.Println("++++++++++++++++++++++++++【任务一 有错误 执行获取网关列表数据,并更新数据】+++++++++++++++++++++", gwNewuperr)
+		//}
 		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程3，处理按分钟的定时任务【完成】44444444444444444444444444444444444444444444444444444444444444444444444444444")
+
+		//处理软件版本更新操作的执行
 
 	}
 
@@ -168,6 +170,46 @@ func GatewayDataUpdate() error {
 			}
 		}
 
+		//2.1.1 如果网关编号存在就更新，如果不存在就插入
+		qerr, gwd11 := QueryGatewaydata(gwmsg.MsgHead.TerminalId)
+		if qerr != nil {
+			//不存在就插入
+			if fmt.Sprint(qerr) == "record not found" {
+				//log.Println("Queryerr== `record not found`:", qerr)
+				log.Println("qerr:", qerr, "是新网关：", gwd11, "新网关设备需要插入数据库")
+				//
+				gwxx11 := new(types.BDmWanggjcxx)
+				gwxx11.FVcWanggbh = gwmsg.MsgHead.TerminalId //	 '网关编号',
+				gwxx11.FVcGongsID = gwmsg.MsgHead.CompanyId  //	'公司ID',
+				gwxx11.FVcTingccbh = gwmsg.MsgHead.Parkid    //'停车场编号',
+				gwxx11.FDtZuijgxbbsj = time.Now()
+				gwxx11.FDtChuangjsj = time.Now()
+				gwxx11.FDtZuihgxsj = time.Now()
+				gwxx11.FNbZhuangt = 1
+				if !utils.StringExist(gwmsg.Gatewayip, ",") {
+					gwxx.FVcIpdz = gwmsg.Gatewayip //	 'IP地址',
+				} else {
+					gwip := strings.Split(gwmsg.Gatewayip, ",")
+					gwxx.FVcIpdz = gwip[0] //	 'IP地址',
+				}
+
+				gwxx.FVcDangqbbh = gwmsg.GetwayVersion                                    //'当前版本号',
+				gwxx.FDtZuijgxbbsj = utils.StrTimeTotime(gwmsg.LastversionUpdatedatetime) // '场内网关最近更新版本时间',
+				yxsc, _ := strconv.Atoi(gwmsg.ProgrameRuntime)
+				gwxx.FNbYunxsc = yxsc
+				//插入新网关
+				inerr := GatewayInsert(gwxx11)
+				if inerr != nil {
+					log.Println("++++++++++++++++++++++++++++++++++++++++插入新网关失败：", inerr)
+				}
+
+				continue
+			} else {
+				log.Println("++++++++++++++++++++++++++++++++++++++++查询网关是否已经存在时，查询失败", qerr)
+				continue
+			}
+		}
+
 		//2.2 如果网关设备id存在，更新 网关基本信息记录
 		log.Println("+++++++++++++++网关已经存在", "qerr:", qerr)
 
@@ -220,6 +262,12 @@ func GatewayDataUpdate() error {
 
 		gwxx.FDtZuijgxbbsj = utils.StrTimeTotime(gwmsg.LastversionUpdatedatetime) // '最近更新版本时间',
 		AntennaInfosNum := len(gwmsg.AntennaInfos)
+
+		for _, txzx := range gwmsg.AntennaInfos {
+			if txzx.Rsuip == "" {
+				AntennaInfosNum = AntennaInfosNum - 1
+			}
+		}
 		gwxx.FNbTianxsl = AntennaInfosNum //	'天线数量',
 
 		yc, _ := strconv.Atoi(gwmsg.NetWorkDelay)
@@ -239,20 +287,39 @@ func GatewayDataUpdate() error {
 		for _, tianxian := range gwmsg.AntennaInfos {
 			//把天线信息插入数据库
 			antennaInfo := new(types.BDmTianxxx)
-			antennaInfo.FVcWanggbh = gwmsg.MsgHead.TerminalId
-			antennaInfo.FVcChedwyid = tianxian.Laneid
-			antennaInfo.FVcIpdz = tianxian.Rsuip
+			antennaInfo.FVcWanggbh = gwmsg.MsgHead.TerminalId //网关设备id
+			antennaInfo.FVcChedwyid = tianxian.Laneid         //车道
+			antennaInfo.FVcIpdz = tianxian.Rsuip              //天线ip
+			antennaInfo.FVcZhuczt = tianxian.Isregister       //注册状态
 
+			antennaInfo.FVcTianxzt = tianxian.AntennaStatus //天线状态
+
+			antennaInfo.FVcTianxztgxsj = tianxian.AntennaStatusUpdatetime //天线状态更新时间
+
+			//判断是否在线，获取更新时间与现在的时间差大于5分钟就离线
+			if tianxian.AntennaStatusUpdatetime != "" {
+				stamp1 := utils.StrTimeToTimestamp(tianxian.AntennaStatusUpdatetime) //
+				stamp2 := utils.GetTimestamp()
+
+				if (stamp2 - stamp1) > 180 {
+					antennaInfo.FVcTianxzt = "0" //	'状态 0：离线、1：在线',[通过最新存储时间判断]
+				} /* else {
+					gwxx.FNbZhuangt = 1 //	 '状态 0：离线、1：在线',[通过最新存储时间判断]
+				}*/
+			}
+
+			antennaInfo.FDtShangcqdsj = utils.StrTimeTotime("2020-10-10 00:00:00")
 			//不正常的时候
 			if tianxian.Isregister != "1" {
-				antennaInfo.FDtShangcqdsj = utils.StrTimeTotime(tianxian.AntennaStatusUpdatetime) //上一次启动时间
+				if tianxian.AntennaStatusUpdatetime != "" {
+					antennaInfo.FDtShangcqdsj = utils.StrTimeTotime(tianxian.AntennaStatusUpdatetime) //上一次启动时间
+					//连续工作时长【通过时间差获得】
+					sjstr := utils.TimeDifference(antennaInfo.FDtShangcqdsj, time.Now())
 
-				//连续工作时长【通过时间差获得】
-				sjstr := utils.TimeDifference(time.Now(), antennaInfo.FDtShangcqdsj)
-
-				sj := strings.Split(sjstr, "s")
-				s, _ := strconv.Atoi(sj[0])
-				antennaInfo.FNbLianxgzsc = s // 连续工作时长秒
+					sj := strings.Split(sjstr, "s")
+					s, _ := strconv.Atoi(sj[0])
+					antennaInfo.FNbLianxgzsc = s // 连续工作时长秒
+				}
 			} else {
 				log.Println("正常使用中")
 			}
@@ -260,12 +327,29 @@ func GatewayDataUpdate() error {
 			//插入之前先查询
 			qrsuerr, RSUdata := QueryRSUOnedata(antennaInfo.FVcWanggbh, antennaInfo.FVcChedwyid)
 			if qrsuerr != nil {
-
-				//如果不存在，则新增
+				if fmt.Sprint(qrsuerr) == "record not found" {
+					log.Println("+++++++++++++++++", qrsuerr, "没有找到，说明该信息还没有在数据库中有对应的记录,不存在，则新增天线记录")
+					//如果不存在，则新增
+					if antennaInfo.FVcIpdz == "" {
+						continue
+					}
+					inRSuerr := InsertRSUOnedata(antennaInfo)
+					if inRSuerr != nil {
+						continue
+					}
+				} else {
+					continue
+				}
 			}
 
 			//如果存在，则更新
 			log.Println(RSUdata)
+			if RSUdata != nil {
+				UpRsuerr := UpdateRSUOnedata(antennaInfo)
+				if UpRsuerr != nil {
+					continue
+				}
+			}
 
 		}
 
@@ -308,23 +392,23 @@ func GatewayDataUpdate() error {
 			// 检查元素是否在map
 			if _, ok := set2[v]; ok {
 
-				gwxx1 := new(types.BDmWanggjcxx)
-				gwxx1.FNbZhuangt = 1 //	'状态 0：离线、1：在线',[通过最新存储时间判断]
+				//gwxx1 := new(types.BDmWanggjcxx)
+				//gwxx1.FNbZhuangt = 1 //	'状态 0：离线、1：在线',[通过最新存储时间判断]
 
 				//更新网关基本信息
-				log.Println(v, " is in the list", "状态 0：离线、1：在线", gwxx1.FNbZhuangt)
-				uperr1 := UpdateGatewaydata(v, gwxx1)
+				log.Println(v, " is in the list", "【状态 0：离线、1：在线】", 1)
+				uperr1 := UpdateGatewayZTdata(v, 1)
 				if uperr1 != nil {
 					log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++++更新网关信息失败:", uperr1, time.Now())
 					return uperr1
 				}
 			} else {
 
-				gwxx2 := new(types.BDmWanggjcxx)
-				gwxx2.FNbZhuangt = 0 //	'状态 0：离线、1：在线',[通过最新存储时间判断]
+				//	gwxx3 := new(types.BDmWanggjcxx)
+				//	gwxx3.FNbZhuangt = 0 //	'状态 0：离线、1：在线',[通过最新存储时间判断]
 				//更新网关基本信息
-				log.Println(v, " is not in the list", "状态 0：离线、1：在线", gwxx2.FNbZhuangt)
-				uperr2 := UpdateGatewaydata(v, gwxx2)
+				log.Println(v, " is not in the list", "【状态 0：离线、1：在线】", 0)
+				uperr2 := UpdateGatewayZTdata(v, 0)
 				if uperr2 != nil {
 					log.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++++更新网关信息失败:", uperr2, time.Now())
 					return uperr2
@@ -672,11 +756,15 @@ func GatewayAlarmDataUpdate() error {
 		errmsg := new(types.BDmGaoj)
 		errmsg.FVcWanggbh = errormsg.Endpoint
 		//时间戳转字符串
-		st := utils.TimestampToFormat(errormsg.Etime)
+
+		Etime, _ := strconv.Atoi(errormsg.Etime)
+
+		st := utils.TimestampToFormat(int64(Etime))
 		errmsg.FDtGaojsj = utils.StrTimeTotime(st)
+		//log.Println("############时间戳转字符串",errormsg.Etime,"to",st)
 		//告警描述
-		errmsg.FVcGaojms = errormsg.EndpointAlias + "|" + errormsg.Endpoint + "|" + errormsg.Name + "｜报警优先级:" + errormsg.Priority + "｜事件类型:" + errormsg.Event_type + "｜状态:" + errormsg.Status + "｜状态名称:" + errormsg.StatusName + "｜事件类型名称:" + errormsg.EventTypeName
-		errmsg.FDtChulsj = utils.DateToNowdate()
+		errmsg.FVcGaojms = errormsg.EndpointAlias + "|" + errormsg.Endpoint + "|" + errormsg.Name + "｜报警优先级:" + errormsg.Priority + "｜事件类型:" + errormsg.Event_type + "｜状态:" + errormsg.Status + "｜状态名称:" + errormsg.StatusName + "｜事件类型名称:" + errormsg.EventTypeName + "[告警时间：]" + st
+		errmsg.FDtChulsj = utils.StrTimeToNowtime()
 
 		//告警信息插入前先查询该记录是否存在
 		qEerr := QueryGatewayError(errmsg.FVcWanggbh, st, errmsg.FVcGaojms)

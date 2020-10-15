@@ -70,7 +70,7 @@ func Querygatewaylist(c *gin.Context) {
 		//磁盘使用率
 		Yingpsyl, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", gwxx.FNbYingpsyl), 64)
 		data.DISKpercent = Yingpsyl
-		//磁盘使用大小
+		//磁盘使用大小 Float64
 		Yisyypdx, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", gwxx.FNbYisyypdx), 64)
 		data.DISK = Yisyypdx
 		//未处理告警数量
@@ -101,7 +101,13 @@ func Querygatewaylist(c *gin.Context) {
 		}
 
 		//天线数量
-		data.RsuNum = gwxx.FNbTianxsl
+
+		qerrRSUerr, errtxsl := db.QueryErrorRSUALLdata(gwxx.FVcWanggbh)
+		if qerrRSUerr != nil {
+			log.Println("++++++++++查询天线数量错误+++++++++")
+		}
+		data.RsuNum = errtxsl
+		data.RsuALLNum = gwxx.FNbTianxsl
 		//延迟
 		data.Network = int64(gwxx.FNbWanglyc)
 		data.Flag = false
@@ -204,7 +210,9 @@ func QueryRSURecordlist(c *gin.Context) {
 		data.TerminalId = tx.FVcWanggbh
 		data.RSUIP = tx.FVcIpdz    // 天线ip
 		data.Lane = tx.FVcChedwyid // 车道
-
+		data.Isregister = tx.FVcZhuczt
+		data.AntennaStatus = tx.FVcTianxzt
+		data.AntennaStatusUpdatetime = tx.FVcTianxztgxsj
 		data.WorkTime = utils.SecondsToTime(tx.FNbLianxgzsc) //秒
 		datas = append(datas, *data)
 	}
@@ -236,8 +244,23 @@ func QueryGatewayDeviceDetails(c *gin.Context) {
 	}
 	//数据赋值
 	data := new(dto.QueryGatewayOneResp)
-	data.TerminalId = wgxx.FVcWanggbh     // 设备ID，如CE4C37043A520C93
-	data.ParkName = wgxx.FVcTingccbh      // 停车场名称
+	data.TerminalId = wgxx.FVcWanggbh // 设备ID，如CE4C37043A520C93
+
+	qpkerr, pm := db.QueryParkName(wgxx.FVcTingccbh)
+	if qpkerr != nil {
+		if fmt.Sprint(qpkerr) == "record not found" {
+			log.Println("err:", qpkerr)
+
+		} else {
+			log.Println("++++++++++++++++++++++++++++++++查询停车场名称错误")
+		}
+	}
+	if pm == nil {
+		data.ParkName = wgxx.FVcTingccbh // 停车场名称
+	} else {
+		data.ParkName = pm.FVcMingc // 停车场名称
+	}
+
 	data.Gatewayip = wgxx.FVcIpdz         //   网关IP地址，多个地址则用”, ”分隔
 	data.GetwayVersion = wgxx.FVcDangqbbh //   场内网关版本号
 	data.CPU = wgxx.FNbCPUsyl
@@ -248,20 +271,20 @@ func QueryGatewayDeviceDetails(c *gin.Context) {
 	data.Network = int64(wgxx.FNbWanglyc)
 	data.WorkTime = utils.SecondsToTime(wgxx.FNbYunxsc) //工作时长
 
-	qerr, txs := db.QueryRSUALLdata(req.TerminalId)
-	if qerr != nil {
-		if fmt.Sprint(qerr) == "record not found" {
-		} else {
-			c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询天线记录列表,获取天线数量时 error"})
-			return
-		}
-	}
-	if txs != nil {
-		data.Restarts = len(*txs)
-	} else {
-		data.Restarts = 0
-	}
-
+	//qerr, txs := db.QueryRSUALLdata(req.TerminalId)
+	//if qerr != nil {
+	//	if fmt.Sprint(qerr) == "record not found" {
+	//	} else {
+	//		c.JSON(http.StatusOK, dto.Response{Code: types.StatusQueryDataError, Data: types.StatusText(types.StatusQueryDataError), Message: "查询天线记录列表,获取天线数量时 error"})
+	//		return
+	//	}
+	//}
+	//if txs != nil {
+	//	data.Restarts = len(*txs)
+	//} else {
+	//
+	//}
+	data.Restarts = wgxx.FNbChongqcs
 	qrerr, cq := db.QueryRestartOnedata(req.TerminalId)
 	if qrerr != nil {
 		if fmt.Sprint(qrerr) == "record not found" {
@@ -459,6 +482,7 @@ func QuerygatewayVersionlist(c *gin.Context) {
 			return
 		}
 		resq.Num = num //版本使用设备数
+		resq.Name = v.FVcShangczxm
 		datas = append(datas, *resq)
 
 	}
@@ -577,4 +601,9 @@ func VersionUpdate(c *gin.Context) {
 	}
 	//2、返回数据
 	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: types.StatusText(types.StatusSuccessfully), Message: "更新软件版本成功"})
+
+	//执行版本更新,把要更新的网关设备已经版本信息，以及版本文件的地址 反馈给dataserver
+
+	//1、查询要更新的设备与版本
+
 }

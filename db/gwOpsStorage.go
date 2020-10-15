@@ -40,11 +40,25 @@ func QueryGatewaydata(FVcWanggbh string) (error, *types.BDmWanggjcxx) {
 //3、更新网关信息表 根据网关编号
 func UpdateGatewaydata(Wanggbh string, gwdata *types.BDmWanggjcxx) error {
 	db := utils.GormClient.Client
-	if err := db.Table("b_dm_wanggjcxx").Where("F_VC_WANGGBH=?", Wanggbh).Updates(gwdata).Error; err != nil {
+	if err := db.Table("b_dm_wanggjcxx").Where("F_VC_WANGGBH=?", Wanggbh).Update(gwdata).Error; err != nil {
 		log.Println("更新网关基础信息表 error:", err)
 		return err
 	}
 	log.Println("更新网关基础信息表 ok !", Wanggbh, gwdata.FNbZhuangt)
+	return nil
+}
+
+//3、更新网关信息表 根据网关编号
+func UpdateGatewayZTdata(Wanggbh string, zt int) error {
+	db := utils.GormClient.Client
+	///	gw:=new(types.BDmWanggjcxx)
+	//	gw.FVcWanggbh=Wanggbh
+	//gw.FNbZhuangt=zt
+	if err := db.Table("b_dm_wanggjcxx").Where("F_VC_WANGGBH = ?", Wanggbh).Update("F_NB_ZHUANGT", zt).Error; err != nil {
+		log.Println("更新网关基础信息表 error:", err)
+		return err
+	}
+	log.Println("更新网关基础信息表 ok !", Wanggbh, zt)
 	return nil
 }
 
@@ -215,6 +229,19 @@ func QueryRSUALLdata(TerminalId string) (error, *[]types.BDmTianxxx) {
 	return nil, &gjs
 }
 
+//查询不在线天线信息
+func QueryErrorRSUALLdata(TerminalId string) (error, int) {
+	db := utils.GormClient.Client
+	gjs := make([]types.BDmTianxxx, 0)
+	log.Println("req.TerminalId:", TerminalId)
+	if err := db.Table("b_dm_tianxxx").Where("F_VC_WANGGBH =?", TerminalId).Not("F_VC_TIANXZT = ?", "1").Find(&gjs).Error; err != nil {
+		log.Println("查询 天线信息表ALL数据时 error :", err)
+		return err, 0
+	}
+	log.Println("查询天线信息表 数据，成功！数据结果:", "不在线共", len(gjs), "个天线")
+	return nil, len(gjs)
+}
+
 //查询天线信息
 func QueryRSUOnedata(TerminalId, chedaoid string) (error, *types.BDmTianxxx) {
 	db := utils.GormClient.Client
@@ -226,6 +253,28 @@ func QueryRSUOnedata(TerminalId, chedaoid string) (error, *types.BDmTianxxx) {
 	}
 	log.Println("查询天线信息表 数据，成功！数据结果:", tx.FVcWanggbh, tx.FVcChedwyid, tx.FVcIpdz)
 	return nil, tx
+}
+
+//新增天线信息
+func InsertRSUOnedata(tx *types.BDmTianxxx) error {
+	db := utils.GormClient.Client
+	if err := db.Table("b_dm_tianxxx").Create(tx).Error; err != nil {
+		log.Println("新增 天线信息表数据时 error :", err)
+		return err
+	}
+	log.Println("新增天线信息表 数据，成功！数据结果:", tx.FVcWanggbh, tx.FVcChedwyid, tx.FVcIpdz)
+	return nil
+}
+
+//更新天线信息
+func UpdateRSUOnedata(tx *types.BDmTianxxx) error {
+	db := utils.GormClient.Client
+	if err := db.Table("b_dm_tianxxx").Where("F_VC_WANGGBH =?", tx.FVcWanggbh).Where("F_VC_CHEDWYID =?", tx.FVcChedwyid).Update(tx).Error; err != nil {
+		log.Println("新增 天线信息表数据时 error :", err)
+		return err
+	}
+	log.Println("更新天线信息表 数据，成功！数据结果:", tx.FVcWanggbh, tx.FVcChedwyid, tx.FVcIpdz)
+	return nil
 }
 
 //1.获取网关设备详情
@@ -380,17 +429,29 @@ func VersionsUpdatedata(req *dto.VersionUpdateQeq) error {
 }
 
 //查询该网关、该版本是否已经更新
-func QueryVersionISUpdate(gwid, versionid string) (error, *types.BDmRuanjgxzx) {
+func QueryVersionISUpdate(gwid, version string) (error, *types.BDmRuanjgxzx) {
 	db := utils.GormClient.Client
 	v := new(types.BDmRuanjgxzx)
 	//查询是否存在如果已经存在，说明已经在更新中或者已经更新成功
-	if err := db.Table("b_dm_ruanjgxzx").Where("F_VC_WANGGBH=?", gwid).Where("F_NB_BANBENID=?", versionid).Last(&v).Error; err != nil {
+	if err := db.Table("b_dm_ruanjgxzx").Where("F_VC_WANGGBH=?", gwid).Where("F_VC_RUANJBBH=?", version).Last(&v).Error; err != nil {
 		log.Println("查询 软件更新执行 error :", err)
 		return err, nil
 	}
 	log.Println("查询软件更新执行表 数据，成功！数据结果:", v.FVcWanggbh, v.FVcRuanjbbh, "v.FNbZhuangt(1:ok  0:ing):", v.FNbZhuangt)
 	return nil, v
 }
+
+//func QueryVersiondispose()(error,*types.BDmRuanjgxzx){
+//	db := utils.GormClient.Client
+//	v := new(types.BDmRuanjgxzx)
+//	//查询是否存在如果已经存在，说明已经在更新中或者已经更新成功
+//	if err := db.Table("b_dm_ruanjgxzx").Where("F_VC_WANGGBH=?", gwid).Where("F_VC_RUANJBBH=?", version).Last(&v).Error; err != nil {
+//		log.Println("查询 软件更新执行 error :", err)
+//		return err, nil
+//	}
+//	log.Println("查询软件更新执行表 数据，成功！数据结果:", v.FVcWanggbh, v.FVcRuanjbbh, "v.FNbZhuangt(1:ok  0:ing):", v.FNbZhuangt)
+//	return nil, v
+//}
 
 //查询软件版本列表下拉框
 func QueryVersionALL() (error, *[]types.BDmRuanjbb) {

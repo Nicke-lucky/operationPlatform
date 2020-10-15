@@ -119,7 +119,7 @@ type ErrorMsg struct {
 	Id            int    `json:"id"`              //告警的id、n9e_mon数据库中event表的id
 	NodePath      string `json:"node_path"`       //对应报警策略中的节点
 	Value         string `json:"value"`           //产生报警的事件，上报到n9e中的键值
-	Etime         int64  `json:"etime"`           //"etime": "1600683220",报警的事件产生时的时间戳
+	Etime         string `json:"etime"`           //"etime": "1600683220",报警的事件产生时的时间戳
 	Name          string `json:"name"`            //"	"name": "网关日志总大小超过10GB",对应报警策略中的配置的策略名称
 	Priority      string `json:"priority"`        //"	"priority": "1", 优先级、报警优先级
 	Endpoint      string `json:"endpoint"`        //"	"endpoint": "4E944368CEE82941",节点
@@ -238,7 +238,8 @@ type QueryGatewayListResp struct {
 	Restarts                  int     `json:"restarts"`
 	GetwayVersion             string  `json:"getway_version"`             //   场内网关版本号
 	LastversionUpdatedatetime string  `json:"lastversion_updatedatetime"` //   场内网关最后更新成功时间
-	RsuNum                    int     `json:"rsu_num"`
+	RsuNum                    int     `json:"offline_rsu_num"`
+	RsuALLNum                 int     `json:"rsu_all_num"`
 	Network                   int64   `json:"net_work"`
 	Flag                      bool    `json:"flag"` //前端需要的一个标记
 }
@@ -280,10 +281,14 @@ type DataMsg struct {
 
 //天线列表请求信息
 type QueryRSUMsgListResp struct {
-	TerminalId string `json:"terminal_id"` // 设备ID，如CE4C37043A520C93	//网关id
-	RSUIP      string `json:"rsu_ip"`      // 天线ip
-	WorkTime   string `json:"work_time"`   // 连续工作时长lane
-	Lane       string `json:"lane"`        // 车道
+	TerminalId              string `json:"terminal_id"`               // 设备ID，如CE4C37043A520C93	//网关id
+	RSUIP                   string `json:"rsu_ip"`                    // 天线ip
+	WorkTime                string `json:"work_time"`                 // 连续工作时长lane
+	Lane                    string `json:"lane"`                      // 车道
+	Isregister              string `json:"isregister"`                //车道是否注册：1 表示已注册, 其它未注册
+	AntennaStatus           string `json:"antenna_status"`            //   车道天线状态：1正常，其它值异常
+	AntennaStatusUpdatetime string `json:"antenna_status_updatetime"` //   车道天线状态更新时间，如果与当前时间相差很大，说明天线状态也是异常的。
+
 }
 
 //网关基础信息
@@ -319,6 +324,7 @@ type QueryVersionListResp struct {
 	Time        string `json:"time"`
 	VersionNote string `json:"version_note"`
 	Num         int    `json:"num"` //运行版本数据
+	Name        string `json:"name"`
 }
 
 type QueryVersionsResp struct {
