@@ -327,6 +327,15 @@ type QueryVersionListResp struct {
 	Name        string `json:"name"`
 }
 
+type PerformVersionUpdateResp struct {
+	TerminalId       string `json:"terminal_id"`      //设备ID，如CE4C37043A520C93
+	Upgrade          string `json:"upgrade"`          //是否需要升级:0不需要 1需要升级
+	GatewayVersion   string `json:"gateway_version"`  //网关新版本号
+	Download_url     string `json:"download_url"`     //网关下载的URL
+	CurrversionMd5   string `json:"currversion_md5"`  //场内网关gateway文件MD5值
+	Decrypt_password string `json:"decrypt_password"` //版本文件zip的解压密码(暂不加密压缩)
+}
+
 type QueryVersionsResp struct {
 	Versions []VersionMsg `json:"versions"` // 软件版本号
 }

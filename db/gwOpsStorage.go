@@ -428,6 +428,65 @@ func VersionsUpdatedata(req *dto.VersionUpdateQeq) error {
 	return nil
 }
 
+//执行版本更新
+func PerformVersionsUpdatedata(req *dto.PerformVersionUpdateQeq) (error, *types.BDmRuanjgxzx) {
+	db := utils.GormClient.Client
+	//要更新的设备软件版本，   要查询该设备是否需要更新
+	v := new(types.BDmRuanjgxzx)
+	//查询是否存在如果已经存在，说明已经在更新中或者已经更新成功
+	if err := db.Table("b_dm_ruanjgxzx").Where("F_VC_WANGGBH=?", req.TerminalId).Where("F_VC_RUANJBBH=?", req.GatewayVersion).Last(&v).Error; err != nil {
+		log.Println("查询 软件更新执行 error :", err)
+		if fmt.Sprint(err) == "record not found" {
+			log.Println("###err:", err, "说明该版本在版本执行中不存在，可能是旧版本，或者新版本还没有增加到更新执行表中")
+			//判断是否需要更新
+			v11 := new(types.BDmRuanjgxzx)
+			if err := db.Table("b_dm_ruanjgxzx").Where("F_VC_WANGGBH=?", req.TerminalId).Where("F_NB_ZHUANGT=?", 0).Last(&v11).Error; err != nil {
+				log.Println("查询 软件更新执行 error :", err)
+				if fmt.Sprint(err) == "record not found" {
+					log.Println("###err:", err, "说明该版本在版本执行中没有需要新版本【ok】，可能是已经更新为版本，或者已经在更新为新版本中【耐心等等1小时后再来】")
+					//不需要更新
+					return nil, nil
+				} else {
+					log.Println("##############################err:", err, "【查询该设备 执行版本更新是否有需要更新版本错误】")
+					return err, nil
+				}
+			}
+			//
+			return nil, v11
+			//return nil,nil
+		} else {
+			log.Println("##############################err:", err, "【查询该设备 执行版本更新是否存在错误】")
+			return err, nil
+		}
+
+	}
+
+	//已经存在，并且已经是更新完成了的，可能是就版本，需要进一步查询
+	if v.FNbZhuangt == 1 {
+		log.Println("软件版本更新表数据更新完成，该版本可能为旧版本")
+		//查询是否有需要更新的，如果有说明有新版本
+		v1 := new(types.BDmRuanjgxzx)
+		if err := db.Table("b_dm_ruanjgxzx").Where("F_VC_WANGGBH=?", req.TerminalId).Where("F_NB_ZHUANGT=?", 0).Last(&v1).Error; err != nil {
+			log.Println("查询 软件更新执行 error :", err)
+			if fmt.Sprint(err) == "record not found" {
+				log.Println("###err:", err, "说明该版本在版本执行中没有需要新版本【ok】，可能是已经更新为版本，或者已经在更新为新版本中【耐心等等1小时后再来】")
+
+				//没有需要更新的版本
+				return nil, nil
+			} else {
+				log.Println("##############################err:", err, "【查询该设备 执行版本更新是否有需要更新版本错误】")
+				return err, nil
+			}
+		}
+		//有需要更新的
+		return nil, v1
+
+	}
+
+	//log.Println("软件版本更新表数据更新完成++++++++")
+	return nil, nil
+}
+
 //查询该网关、该版本是否已经更新
 func QueryVersionISUpdate(gwid, version string) (error, *types.BDmRuanjgxzx) {
 	db := utils.GormClient.Client

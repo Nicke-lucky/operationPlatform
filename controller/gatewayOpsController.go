@@ -607,3 +607,57 @@ func VersionUpdate(c *gin.Context) {
 	//1、查询要更新的设备与版本
 
 }
+
+//PerformVersionUpdate
+func PerformVersionUpdate(c *gin.Context) {
+	req := dto.PerformVersionUpdateQeq{}
+	//1、获取请求数据
+	if err := c.Bind(&req); err != nil {
+		log.Println("添加软件更新版本 获取请求参数时 err:", err)
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "添加软件更新版本，获取请求参数时 error"})
+		return
+	}
+	//2、校验参数
+	if req.TerminalId == "" {
+		log.Println("要更新的设备网关为空")
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "要更新的设备网关不能为空"})
+		return
+	}
+	//if req.OSVersion == "" {
+	//	log.Println("要更新的设备网关操作系版本为空" )
+	//	c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "要更新的设备网关操作系版本不能为空"})
+	//	return
+	//}
+	//
+	//if req.OSArch == "" {
+	//	log.Println("要更新的设备网关的操作系处理器架构为空" )
+	//	c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "要更新的设备网关的操作系处理器架构不能为空"})
+	//	return
+	//}
+
+	if req.GatewayVersion == "" {
+		log.Println("要更新的设备网关的场内网关版本号为空")
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "要更新的设备网关的场内网关版本号不能为空"})
+		return
+	}
+
+	//if req.CurrversionMd5 == "" {
+	//	log.Println("要更新的设备网关的场内网关gateway文件MD5值为空" )
+	//	c.JSON(http.StatusOK, dto.Response{Code: types.StatusGetReqError, Data: types.StatusText(types.StatusGetReqError), Message: "要更新的设备网关的场内网关gateway文件MD5值不能为空"})
+	//	return
+	//}
+
+	derr, banbgx := db.PerformVersionsUpdatedata(&req)
+	if derr != nil {
+		c.JSON(http.StatusOK, dto.Response{Code: types.StatusDeleteDataError, Data: types.StatusText(types.StatusDeleteDataError), Message: "更新软件版本时错误"})
+		return
+	}
+	log.Println(banbgx)
+	//2、返回数据
+	resp := new(dto.PerformVersionUpdateResp)
+	resp.TerminalId = "CE4C37043A520C93" //设备ID，如CE4C37043A520C93
+	resp.GatewayVersion = "version"      //网关新版本号
+	resp.Download_url = "http://abc.com" //网关下载的URL
+	resp.Upgrade = "0"                   //是否需要升级:0不需要 1需要升级
+	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: resp, Message: "查询设备网关软件版本是否更新成功"})
+}

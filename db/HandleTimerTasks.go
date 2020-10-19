@@ -101,7 +101,7 @@ func HandleSecondTasks() {
 		//}
 		log.Println(utils.DateTimeFormat(<-tiker.C), "执行线程3，处理按分钟的定时任务【完成】44444444444444444444444444444444444444444444444444444444444444444444444444444")
 
-		//处理软件版本更新操作的执行
+		//处理软件版本更新操作的执行,查询网关是否更新成功按半小时来处理
 
 	}
 
@@ -290,11 +290,23 @@ func GatewayDataUpdate() error {
 			antennaInfo.FVcWanggbh = gwmsg.MsgHead.TerminalId //网关设备id
 			antennaInfo.FVcChedwyid = tianxian.Laneid         //车道
 			antennaInfo.FVcIpdz = tianxian.Rsuip              //天线ip
-			antennaInfo.FVcZhuczt = tianxian.Isregister       //注册状态
+			if tianxian.Isregister == "" {
+				antennaInfo.FVcZhuczt = "nil"
+			} else {
+				antennaInfo.FVcZhuczt = tianxian.Isregister //注册状态
+			}
 
-			antennaInfo.FVcTianxzt = tianxian.AntennaStatus //天线状态
+			if tianxian.AntennaStatus == "" {
+				antennaInfo.FVcTianxzt = "nil"
+			} else {
+				antennaInfo.FVcTianxzt = tianxian.AntennaStatus //天线状态
+			}
 
-			antennaInfo.FVcTianxztgxsj = tianxian.AntennaStatusUpdatetime //天线状态更新时间
+			if tianxian.AntennaStatusUpdatetime == "" {
+				antennaInfo.FVcTianxztgxsj = "nil"
+			} else {
+				antennaInfo.FVcTianxztgxsj = tianxian.AntennaStatusUpdatetime //天线状态更新时间
+			}
 
 			//判断是否在线，获取更新时间与现在的时间差大于5分钟就离线
 			if tianxian.AntennaStatusUpdatetime != "" {

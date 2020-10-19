@@ -102,7 +102,7 @@ type BDmRuanjgxzx struct {
 	FVcRuanjbbh  string    `gorm:"column:F_VC_RUANJBBH"`  //	`F_VC_RUANJBBH` varchar(512) NOT NULL COMMENT '软件版本号',
 	FNbJihgxcl   int       `gorm:"column:F_NB_JIHGXCL"`   //	`F_NB_JIHGXCL` int(11) NOT NULL DEFAULT '0' COMMENT '计划更新策略 0：立即更新、1：定时更新',
 	FDtJihgxsj   time.Time `gorm:"column:F_DT_JIHGXSJ"`   //	`F_DT_JIHGXSJ` datetime DEFAULT NULL COMMENT '计划更新时间',
-	FNbZhuangt   int       `gorm:"column:F_NB_ZHUANGT"`   //	`F_NB_ZHUANGT` int(11) NOT NULL DEFAULT '0' COMMENT '状态 0：未完成、1：已完成',
+	FNbZhuangt   int       `gorm:"column:F_NB_ZHUANGT"`   //	 '状态 0：未完成、1：已完成'，2更新中,
 	FDtGengxwcsj time.Time `gorm:"column:F_DT_GENGXWCSJ"` //	`F_DT_GENGXWCSJ` datetime DEFAULT NULL COMMENT '更新完成时间',
 	//	PRIMARY KEY (`F_NB_WEIYJLID`),
 	//	KEY `IDX_WANGGBH` (`F_VC_WANGGBH`),

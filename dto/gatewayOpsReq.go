@@ -100,6 +100,16 @@ type VersionUpdateQeq struct {
 	UpdateTime   string  `json:"update_time"`
 }
 
+//Perform
+type PerformVersionUpdateQeq struct {
+	TerminalId     string `json:"terminal_id"`      //设备ID，如CE4C37043A520C93
+	OSVersion      string `json:"os_version"`       //操作系版本
+	OSArch         string `json:"os_arch"`          //操作系处理器架构
+	GatewayVersion string `json:"gateway_version"`  //场内网关版本号
+	CurrversionMd5 string `json:"currversion_md5"`  //场内网关gateway文件MD5值
+	UpgradePlanXml string `json:"upgrade_plan_xml"` //场内网关本地upgrade_plan.xml文件内容
+}
+
 type Gwmsg struct {
 	Gwid string `json:"gwid"` // 软件版本
 }
