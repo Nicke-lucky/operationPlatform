@@ -8,6 +8,7 @@ var DirPath string
 func FileUpload(file []byte, fname string) {
 	//log.Println("filebyte:", string(file[:50]))
 	//http.HandleFunc("/upload", upload)
+
 	//文件在服务器上的位置
 	fpath := DirPath
 	//"/root/test/info.json"
@@ -32,7 +33,3 @@ func FileUpload(file []byte, fname string) {
 //	io.Copy(f, file)
 //	fmt.Fprintln(w, "upload ok!")
 //}
-//
-//
-//
-//

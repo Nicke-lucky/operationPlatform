@@ -13,10 +13,10 @@ import (
 )
 
 // 项目介绍注释
-// @title 结算数据监控平台
+// @title 运维管理平台
 // @version 1.0
-// @description Gin swagger 结算数据监控平台
-// @host 127.0.0.1:8088
+// @description Gin swagger 运维管理平台
+// @host 127.0.0.1:6077
 func main() {
 	conf := config.ConfigInit() //初始化配置
 	log.Println("配置文件信息：", *conf)

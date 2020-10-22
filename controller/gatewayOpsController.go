@@ -423,6 +423,7 @@ func AddNewVersion(c *gin.Context) {
 func UploadVersionFile(c *gin.Context) {
 	//接收文件
 	file, _ := c.FormFile("file")
+	//文件名称就是版本号
 	log.Println("FileName:", file.Filename, "file.Header", file.Header)
 	dst := path.Join("./version/", file.Filename)
 	//保存文件
@@ -452,7 +453,7 @@ func UploadVersionFile(c *gin.Context) {
 	service.FileUpload(data, file.Filename)
 
 	//2、返回数据
-	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: types.StatusText(types.StatusSuccessfully), Message: "添加软件更新版本，上传成功"})
+	c.JSON(http.StatusOK, dto.Response{Code: types.StatusSuccessfully, Data: types.StatusText(types.StatusSuccessfully), Message: "添加软件更新版本文件，上传成功"})
 }
 
 //查询软件版本列表
