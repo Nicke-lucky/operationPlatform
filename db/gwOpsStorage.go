@@ -350,7 +350,7 @@ func QueryVersionALLdata(req *dto.QueryVersionQeq) (error, *[]types.BDmRuanjbb) 
 
 	if req.BeginTime != "" || req.EndTime != "" {
 		//5、查询上传时间
-		mytable = mytable.Where("F_DT_SHANGCSJ = ?", req.BeginTime).Where("F_DT_SHANGCSJ = ?", req.EndTime)
+		mytable = mytable.Where("F_DT_SHANGCSJ >= ?", req.BeginTime+" 00:00:00").Where("F_DT_SHANGCSJ <= ?", req.EndTime+" 23:59:59")
 	}
 	//去除删除的
 	if err := mytable.Not("F_NB_ZHUANGT = ?", 1).Find(&vs).Error; err != nil {
