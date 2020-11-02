@@ -192,3 +192,30 @@ type BTccTingcc struct {
 	FVcQumc         string `gorm:"column:F_VC_QUMC"`          //`F_VC_QUMC` varchar(32) DEFAULT NULL COMMENT '区名称',
 	FNbFeil         int    `gorm:"column:F_NB_FEIL"`          //`F_NB_FEIL` int(11) DEFAULT NULL COMMENT '费率 万分比',
 }
+
+// CREATE TABLE `b_tcc_ched`
+type BTccChed struct {
+	FVcChedwyid  string `gorm:"column:F_VC_CHEDWYID"`  //`F_VC_CHEDWYID` varchar(32) NOT NULL COMMENT '车道唯一ID-NEW',
+	FVcGongsid   string `gorm:"column:F_VC_GONGSID"`   //`F_VC_GONGSID` varchar(32) DEFAULT NULL COMMENT '公司ID-U idx-联合唯一索引',
+	FVcChedbh    string `gorm:"column:F_VC_CHEDBH"`    //`F_VC_CHEDBH` varchar(32) DEFAULT NULL COMMENT '车道编号-U idx-联合唯一索引',
+	FVcTingccbh  string `gorm:"column:F_VC_TINGCCBH"`  //`F_VC_TINGCCBH` varchar(32) DEFAULT NULL COMMENT '停车场编号',
+	FNbTingcclx  int    `gorm:"column:F_NB_TINGCCLX"`  //`F_NB_TINGCCLX` int(11) DEFAULT '1' COMMENT '停车场类型 1：单点；2：总对总；',
+	FNbChedlx    int    `gorm:"column:F_NB_CHEDLX"`    //`F_NB_CHEDLX` int(11) NOT NULL DEFAULT '1' COMMENT '车道类型 1、入口，2、出口',
+	FVcChedmc    string `gorm:"column:F_VC_CHEDMC"`    //`F_VC_CHEDMC` varchar(32) DEFAULT NULL COMMENT '车道名称-NEW',
+	FVcChuangjz  string `gorm:"column:F_VC_CHUANGJZ"`  //`F_VC_CHUANGJZ` varchar(32) DEFAULT NULL COMMENT '创建者',
+	FDtChuangjsj string `gorm:"column:F_DT_CHUANGJSJ"` //`F_DT_CHUANGJSJ` datetime DEFAULT NULL COMMENT '创建时间',
+	FNbZhuangt   int    `gorm:"column:F_NB_ZHUANGT"`   //`F_NB_ZHUANGT` int(11) NOT NULL DEFAULT '1' COMMENT '状态 1：正常；2：停用',
+	FVcPsamid    string `gorm:"column:F_VC_PSAMID"`    //`F_VC_PSAMID` varchar(64) NOT NULL COMMENT 'PSAM卡ID-NEW',
+	FVcMiyaolj   string `gorm:"column:F_VC_MIYAOLJ"`   //`F_VC_MIYAOLJ` varchar(128) DEFAULT NULL COMMENT '密钥路径 下载密钥数据解密',
+	FVcMiy       string `gorm:"column:F_VC_MIY"`       //`F_VC_MIY` varchar(32) NOT NULL COMMENT '秘钥-MOVE id密码一致才通过验证',
+	FVcZuijljsj  string `gorm:"column:F_VC_ZUIJLJSJ"`  //`F_VC_ZUIJLJSJ` varchar(32) DEFAULT NULL COMMENT '车道最近连接时间',
+	FVcChedyz    string `gorm:"column:F_VC_CHEDYZ"`    //`F_VC_CHEDYZ` int(11) DEFAULT NULL COMMENT '车道验证 1：已验证；2：未验证；3：已开通；',
+	FVcYunxzt    string `gorm:"column:F_VC_YUNXZT"`    //`F_VC_YUNXZT` int(11) DEFAULT NULL COMMENT '车道运行状态； 0：正常运行；1：关闭；',
+	FVcChenxbb   string `gorm:"column:F_VC_CHENXBB"`   //`F_VC_CHENXBB` varchar(32) DEFAULT NULL COMMENT '车道程序版本',
+	FVcXinxcjsj  string `gorm:"column:F_VC_XINXCJSJ"`  //`F_VC_XINXCJSJ` varchar(32) DEFAULT NULL COMMENT '信息采集时间',
+	FVcZhongdid  string `gorm:"column:F_VC_ZHONGDID"`  //`F_VC_ZHONGDID` varchar(32) NOT NULL COMMENT '终端ID-MOVE',
+	FVcChangsid  string `gorm:"column:F_VC_CHANGSID"`  //`F_VC_CHANGSID` varchar(32) DEFAULT NULL COMMENT '厂商编码ID',
+	FVcRsuid     string `gorm:"column:F_VC_RSUID"`     //`F_VC_RSUID` varchar(32) DEFAULT NULL COMMENT 'RSU设备ID-END',
+	//PRIMARY KEY (`F_VC_CHEDWYID`)
+	//) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='停车场车道表-U ';
+}

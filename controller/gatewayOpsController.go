@@ -111,6 +111,7 @@ func Querygatewaylist(c *gin.Context) {
 		//延迟
 		data.Network = int64(gwxx.FNbWanglyc)
 		data.Flag = false
+		data.SortFlag = false
 		datas = append(datas, *data)
 	}
 	//2、返回数据
@@ -208,8 +209,20 @@ func QueryRSURecordlist(c *gin.Context) {
 	for _, tx := range *txs {
 		data := new(dto.QueryRSUMsgListResp)
 		data.TerminalId = tx.FVcWanggbh
-		data.RSUIP = tx.FVcIpdz    // 天线ip
-		data.Lane = tx.FVcChedwyid // 车道
+		data.RSUIP = tx.FVcIpdz // 天线ip
+		var chedmc string
+		qerr, cdsj := db.QueryChedaoMC(tx.FVcChedwyid)
+		if qerr != nil {
+			log.Println("error:", qerr, cdsj)
+			chedmc = ""
+		}
+		if cdsj == nil {
+			chedmc = ""
+		} else {
+			chedmc = cdsj.FVcChedmc
+		}
+		//车道名称
+		data.Lane = tx.FVcChedwyid + "|" + chedmc // 车道
 		data.Isregister = tx.FVcZhuczt
 		data.AntennaStatus = tx.FVcTianxzt
 		data.AntennaStatusUpdatetime = tx.FVcTianxztgxsj

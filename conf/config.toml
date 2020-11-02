@@ -37,12 +37,12 @@ log_FileName     = "operationPlatform.log"
 ;redis_databasename  = 2
 
 ;[redis开发]
-redis_addr          = "192.168.200.201:6379"
+redis_addr          = "192.168.200.204:6379"
 redis_databasename  = 2
 
 
 ;[ip_address]结算监控6089 运维管理6077
-ip_address          =192.168.200.201:6077
+ip_address          =192.168.200.204:6077
 
 ;[nightingale_address]海岭数据同步 8092
 ; nightingale_address        =192.168.200.41:8092

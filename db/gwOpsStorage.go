@@ -229,6 +229,19 @@ func QueryRSUALLdata(TerminalId string) (error, *[]types.BDmTianxxx) {
 	return nil, &gjs
 }
 
+//
+func QueryChedaoMC(TerminalId string) (error, *types.BTccChed) {
+	db := utils.GormClient.Client
+	cd := new(types.BTccChed)
+	log.Println("req.TerminalId:", TerminalId)
+	if err := db.Table("b_tcc_ched").Where("F_VC_CHEDBH =?", TerminalId).First(cd).Error; err != nil {
+		log.Println("查询 车道表数据时 error :", err)
+		return err, nil
+	}
+	log.Println("查询车道表 数据，成功！数据结果:", cd)
+	return nil, cd
+}
+
 //查询不在线天线信息
 func QueryErrorRSUALLdata(TerminalId string) (error, int) {
 	db := utils.GormClient.Client
@@ -352,7 +365,7 @@ func QueryVersionALLdata(req *dto.QueryVersionQeq) (error, *[]types.BDmRuanjbb) 
 func QueryVersionNumdata(banbh string) (error, int) {
 	db := utils.GormClient.Client
 	vs := make([]types.BDmRuanjgxzx, 0)
-	//除去删除的软件版本
+	//除去删除的软件版本   F_VC_DANGQBBH
 	//软件更新执行表  状态 0：未完成、1：已完成更新
 	if err := db.Table("b_dm_ruanjgxzx").Where("F_VC_RUANJBBH = ?", banbh).Where("F_NB_ZHUANGT = ?", 1).Find(&vs).Error; err != nil {
 		if fmt.Sprint(err) == "record not found" {
@@ -366,6 +379,8 @@ func QueryVersionNumdata(banbh string) (error, int) {
 	log.Println("查询软件版本设备使用数，查询软件更新执行表 数据，成功！数据结果:", "共", len(vs), "次数")
 	return nil, len(vs)
 }
+
+//通过网关设备表查询软件版本设备使用数
 
 //删除软件版本
 func DeleteVersionsdata(req *dto.DeleteVersionQeq) error {

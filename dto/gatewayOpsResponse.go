@@ -241,7 +241,8 @@ type QueryGatewayListResp struct {
 	RsuNum                    int     `json:"offline_rsu_num"`
 	RsuALLNum                 int     `json:"rsu_all_num"`
 	Network                   int64   `json:"net_work"`
-	Flag                      bool    `json:"flag"` //前端需要的一个标记
+	Flag                      bool    `json:"flag"`     //前端需要的一个标记
+	SortFlag                  bool    `json:"sortflag"` //前端需要的一个标记
 }
 
 //告警信息查询

@@ -99,3 +99,13 @@ func TestQueryAlarm(t *testing.T) {
 	log.Println("gjxx:", gjxxs.FDtGaojsj)
 
 }
+
+func TestQueryChedaoMC(t *testing.T) {
+	Newdb()
+	qerr, gjxxs := QueryChedaoMC("1102")
+	if qerr != nil {
+		log.Println("error:", qerr, gjxxs)
+	}
+	log.Println("Chedmc:", gjxxs.FVcChedmc)
+
+}
