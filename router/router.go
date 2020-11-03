@@ -62,7 +62,7 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	//7、远程连接  [暂时不做]
 
 	//软件版本管理Version management
-	//8、增加网关软件更新的版本【上传固件之增加版本记录】
+	//8、增加网关软件更新的版本【上传固件之增加版本记录到数据库】
 	route.POST("/version/addversion", controller.AddNewVersion)
 	//9、查询软件版本列表
 	route.POST("/version/querygatewayversionlist", controller.QuerygatewayVersionlist)
