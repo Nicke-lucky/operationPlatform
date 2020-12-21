@@ -447,7 +447,7 @@ func UploadVersionFile(c *gin.Context) {
 
 	log.Println("要发送上传文件的path:=", dst)
 	//读取文件
-	f, oserr := os.Open("./version/" + dst)
+	f, oserr := os.Open(dst)
 	if oserr != nil {
 		log.Println("os.Open error:", oserr)
 		return

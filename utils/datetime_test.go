@@ -46,8 +46,8 @@ func TestGetTimestamp(t *testing.T) {
 
 //
 func TestTimestampToFormat(t *testing.T) {
-	logrus.Println(TimestampToFormat(1600678120))
-	logrus.Println(StrTimeTotime(TimestampToFormat(1600678120)))
+	logrus.Println(TimestampToFormat(1530755269798))
+	//logrus.Println(StrTimeTotime(TimestampToFormat(1600678120)))
 	//"2020-09-22 15:20:01"
 }
 

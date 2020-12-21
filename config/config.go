@@ -24,7 +24,7 @@ type Config struct { //配置文件要通过tag来指定配置文件中的名称
 	//日志
 	LogPath         string `ini:"log_Path"`
 	LogMaxAge       int64  `ini:"log_maxAge"`
-	LogRotationTime int64  `ini:"log_rotationTime"`
+	LogRotationTime int64  `ini:"log_rotationTime"` //日志切割时间间隔（小时）
 	LogFileName     string `ini:"log_FileName"`
 
 	//外网id
