@@ -47,7 +47,6 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	//网关运维监控平台
 	//1、网关列表查询
 	route.POST("/gw/querygatewaylist", controller.Querygatewaylist)
-	//未处理告警列表查询 //route.GET("/gw/queryunprocessedalarmlist", controller.QueryUnprocessedAlarmlist)
 	//2、告警列表查询
 	route.POST("/gw/queryalarmlist", controller.QueryAlarmlist)
 	//3、重启记录列表查询
@@ -83,7 +82,6 @@ func AuthAPIInit(route *gin.RouterGroup) {
 	route.GET("/version/querygatewaylist", controller.QueryGatewaylist)
 	//停车场下拉框
 	route.GET("/version/queryparknamelist", controller.QueryparkNamelist)
-
 }
 
 //以下为cors实现

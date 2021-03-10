@@ -22,7 +22,7 @@ mysql_databasename = payflow
 
 ;日志配置
 ;[logconf]
-log_maxAge       = 365 ;//日志最大保存时间（天）
+log_maxAge       = 15 ;//日志最大保存时间（天）
 log_rotationTime = 24  ;//日志切割时间间隔（小时）
 log_Path         = "./log"
 log_FileName     = "operationPlatform.log"
@@ -65,8 +65,6 @@ gwmsg_address    = http://122.51.24.189:8080/etcpark/dataserver/gateway/list
 ;查询网关基本信息接口 http://172.18.70.11:8080/etcpark/dataserver/gateway/list
 ;gwmsg_address    = http://172.18.70.11:8080/etcpark/dataserver/gateway/list
 
-
-
 ;[FilePath]软件版本存放路径[oss]
 filepath        ="http://192.168.200.215:22/Users/nicker/sandbox/operationPlatform/file/"
 ;dirpath        ="/Users/nicker/sandbox/operationPlatform/file/"这里要加文件名的
@@ -75,11 +73,6 @@ oss_host        ="192.168.200.215"
 oss_port        =22
 oss_username    ="mv"
 oss_passwd	    ="microvideo"
-
-
-
-;[frequency]
-frequency          =144
 
 ;[kafka_ip]
 ;kafka_ipa          ="172.18.70.8:9092"

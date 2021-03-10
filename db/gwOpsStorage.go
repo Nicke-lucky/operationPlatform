@@ -149,7 +149,7 @@ func QueryErrordata(gwid string) (int64, error) {
 		log.Println("查询告警表 数据，ALL数据时 error :", err)
 		return 0, err
 	}
-	log.Println("++++++++++++++++++查询告警表 数据ok,count:", Count)
+	log.Println("查询告警表 数据ok,count:", Count)
 	return Count, nil
 }
 
@@ -162,7 +162,7 @@ func QueryUndisposedError(gwid string) (int64, error) {
 		log.Println("查询 重启信息表ALL数据时 error :", err)
 		return 0, err
 	}
-	log.Println("+++++++++++++++++查询未处理告警表 数据ok,count:", Count)
+	log.Println("查询未处理告警表 数据ok,count:", Count)
 	return Count, nil
 }
 

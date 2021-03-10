@@ -622,7 +622,7 @@ func VersionUpdate(c *gin.Context) {
 
 }
 
-//PerformVersionUpdate
+//添加软件更新版本
 func PerformVersionUpdate(c *gin.Context) {
 	req := dto.PerformVersionUpdateQeq{}
 	//1、获取请求数据

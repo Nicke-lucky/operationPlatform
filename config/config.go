@@ -41,9 +41,6 @@ type Config struct { //配置文件要通过tag来指定配置文件中的名称
 	Port     int64  `ini:"oss_port"`
 	Username string `ini:"oss_username"`
 	Passwd   string `ini:"oss_passwd"`
-
-	//频率
-	Frequency int `ini:"frequency"`
 }
 
 //读取配置文件并转成结构体
@@ -70,6 +67,5 @@ func ConfigInit() *Config {
 	if err != nil {
 		log.Fatal(err)
 	}
-	//log.Println(config)
 	return &config
 }

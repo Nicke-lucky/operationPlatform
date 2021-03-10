@@ -9,11 +9,11 @@ import (
 
 //HandleDayTasks()
 func TestHandleDayTasks(t *testing.T) {
-	Newdb()
-	HandleDayTasks()
-	HandleHourTasks()
-	HandleMinutesTasks()
-	HandleSecondTasks()
+	//Newdb()
+	//HandleDayTasks()
+	//HandleHourTasks()
+	//HandleMinutesTasks()
+	//HandleSecondTasks()
 }
 
 func TestGatewayDataPostWithJson1(t *testing.T) {

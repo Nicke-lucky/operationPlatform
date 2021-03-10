@@ -19,9 +19,8 @@ import (
 // @host 127.0.0.1:6077
 func main() {
 	conf := config.ConfigInit() //初始化配置
-	log.Println("配置文件信息：", *conf)
 	utils.InitLogrus(conf.LogPath, conf.LogFileName, time.Duration(24*conf.LogMaxAge)*time.Hour, time.Duration(conf.LogRotationTime)*time.Hour)
-
+	log.Println("配置文件信息：", *conf)
 	//结算监控数据库 "root:Microvideo_1@tcp(122.51.24.189:3307)/blacklist?charset=utf8&parseTime=true&loc=Local"
 	mstr := conf.MUserName + ":" + conf.MPass + "@tcp(" + conf.MHostname + ":" + conf.MPort + ")/" + conf.Mdatabasename + "?charset=utf8&parseTime=true&loc=Local"
 	db.DBInit(mstr) //初始化数据库
